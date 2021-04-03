@@ -5,5 +5,11 @@
 
     <string name="next">Default Chatroom</string>
     <string name="previous">Previous</string>
+    <string name="title_activity_login">LoginActivity</string>
+
+    <string name="tip_account">Username</string>
+    <string name="tip_password">Password</string>
+    <string name="login">Log In</string>
+    <string name="signup">Sign Up</string>
 
 </resources>
