@@ -14,11 +14,13 @@ public class mAdapter extends ArrayAdapter<Message> {
     public ArrayList<Message> mList;
     public Context mContext;
     public LayoutInflater layoutInflater;
+    public String userId;
 
-    public mAdapter(Context context, ArrayList<Message> list) {
+    public mAdapter(Context context, ArrayList<Message> list, String userId) {
         super(context, 0, list);
         this.mContext = context;
         this.mList = list;
+        this.userId = userId;
         layoutInflater = LayoutInflater.from(context);
     }
 
@@ -27,7 +29,7 @@ public class mAdapter extends ArrayAdapter<Message> {
         ViewHolder holder;
         Message m = getItem(i);
 
-        if(m.getUserId().equals("1155149902")) {
+        if (m.getUserId().equals(this.userId)) {
             if (convertView == null) {
                 //layoutInflater.inflate
                 //使用这个布局里面的控件
@@ -37,18 +39,10 @@ public class mAdapter extends ArrayAdapter<Message> {
                 holder.content = (TextView) convertView.findViewById(R.id.message_content);
                 holder.time = (TextView) convertView.findViewById(R.id.message_time);
                 convertView.setTag(holder);
-
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
-
-            //获取List集合里new好的控件和得到里面的数据
-            // 需要写在if null外面， 否则scroll无法更新
-            holder.name.setText(String.format("User: %s", m.getName()));
-            holder.content.setText(m.getMessage());
-            holder.time.setText(m.getTime());
-        }
-        else {
+        } else {
             if (convertView == null) {
 
                 holder = new ViewHolder();
@@ -57,15 +51,16 @@ public class mAdapter extends ArrayAdapter<Message> {
                 holder.content = (TextView) convertView.findViewById(R.id.r_message_content);
                 holder.time = (TextView) convertView.findViewById(R.id.r_message_time);
                 convertView.setTag(holder);
-
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
 
-            holder.name.setText(String.format("User: %s", m.getName()));
-            holder.content.setText(m.getMessage());
-            holder.time.setText(m.getTime());
         }
+        //获取List集合里new好的控件和得到里面的数据
+        // 需要写在if null外面， 否则scroll无法更新
+        holder.name.setText(String.format("User: %s", m.getName()));
+        holder.content.setText(m.getMessage());
+        holder.time.setText(m.getTime());
 
         return convertView;
     }

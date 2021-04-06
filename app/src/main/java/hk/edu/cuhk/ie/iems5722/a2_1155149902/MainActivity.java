@@ -38,7 +38,9 @@ public class MainActivity extends AppCompatActivity {
     private Button btn1;
     private ListView roomListView;
     private Socket mSocket;
-    private static String URL = "http://18.219.150.95/api/a3/get_chatrooms";
+    private String userId;
+    private String username;
+    private static String URL = "http://10.0.2.2:5000/api/a3/get_chatrooms";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,17 +50,25 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setTitle(R.string.title);
         setSupportActionBar(toolbar);
 
+        //获取bundle传递的值
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+        userId = bundle.getString("userId");
+        username = bundle.getString("username");
+
         roomListView = (ListView) findViewById(R.id.chatroom_listView);
         new NewAsyncTask().execute(URL);
 
-        roomListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+        roomListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id){
-                TextView tv = (TextView)view.findViewById(R.id.room_name);
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                TextView tv = (TextView) view.findViewById(R.id.room_name);
                 Intent intent = new Intent(MainActivity.this, ChatActivity.class);
                 Bundle bundle = new Bundle();
-                bundle.putString("id", String.valueOf(position+1));
+                bundle.putString("id", String.valueOf(position + 1));
                 bundle.putString("roomName", tv.getText().toString());
+                bundle.putString("userId", userId);
+                bundle.putString("username", username);
                 intent.putExtras(bundle);
                 startActivity(intent);
             }
@@ -66,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private ArrayList<Chatroom> getJsonData(String url){
+    private ArrayList<Chatroom> getJsonData(String url) {
         ArrayList<Chatroom> roomList = new ArrayList<Chatroom>();
         // readStream此句功能与url.openConnection().getInputStream()相同
         // 可根据URL直接联网获取网络数据
@@ -99,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        Log.d("Main",jsonString);// 打印获取信息
+        Log.d("Main", jsonString);// 打印获取信息
 
         return roomList;
     }
@@ -112,14 +122,14 @@ public class MainActivity extends AppCompatActivity {
      * 最终拼接到result里面。
      * 这样就完成了整个数据的读取。
      * */
-    private String readStream(InputStream is){
+    private String readStream(InputStream is) {
         InputStreamReader isr;
         String result = "";
         try {
             String line = "";
-            isr = new InputStreamReader(is,"utf-8");
+            isr = new InputStreamReader(is, "utf-8");
             BufferedReader br = new BufferedReader(isr);
-            while((line=br.readLine()) != null){
+            while ((line = br.readLine()) != null) {
                 result += line;
             }
         } catch (UnsupportedEncodingException e) {
@@ -143,11 +153,12 @@ public class MainActivity extends AppCompatActivity {
             // params[0]为请求网站，因为只传了一个网址，所以只取0即可
             return getJsonData(params[0]);
         }
+
         // 设置适配器
         @Override
         protected void onPostExecute(ArrayList<Chatroom> chatroom) {
             super.onPostExecute(chatroom);
-            roomAdapter adapter = new roomAdapter(MainActivity.this,chatroom);
+            roomAdapter adapter = new roomAdapter(MainActivity.this, chatroom);
             roomListView.setAdapter(adapter);
         }
 

@@ -25,8 +25,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/user_input"
-        android:layout_marginTop="20dp"
         android:layout_marginLeft="65dp"
+        android:layout_marginTop="20dp"
         android:layout_marginRight="65dp"
         android:height="30dp"
         android:background="@drawable/input_area"
@@ -36,13 +36,29 @@
         android:inputType="textPassword"
         android:textSize="20sp" />
 
+    <EditText
+        android:id="@+id/password_confirm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/password_input"
+        android:layout_marginLeft="65dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="65dp"
+        android:height="30dp"
+        android:background="@drawable/input_area"
+        android:ems="10"
+        android:gravity="center"
+        android:hint="Password Confirm"
+        android:inputType="textPassword"
+        android:textSize="20sp" />
+
     <Button
         android:id="@+id/btn_signup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/password_input"
-        android:layout_marginTop="30dp"
+        android:layout_below="@id/password_confirm"
         android:layout_marginLeft="65dp"
+        android:layout_marginTop="30dp"
         android:layout_marginRight="65dp"
         android:text="@string/signup"
         android:textColor="@color/white"

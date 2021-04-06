@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.net.URL;
+
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
@@ -64,10 +65,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     public mAdapter adapter;
 
     private String URL;
-    private String getURL = "http://18.219.150.95/api/a3/get_messages?chatroom_id=";
-    private String postURL = "http://18.219.150.95/api/a3/send_message";
+    //    private String getURL = "http://18.219.150.95/api/a3/get_messages?chatroom_id=";
+    private String getURL = "http://10.0.2.2:5000/api/a3/get_messages?chatroom_id=";
+    //    private String postURL = "http://18.219.150.95/api/a3/send_message";
+    private String postURL = "http://10.0.2.2:5000/api/a3/send_message";
     private String roomId;
     private String roomName;
+    private String userId;
+    private String username;
     private int total;
     private int current;
 
@@ -98,25 +103,27 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         Bundle bundle = intent.getExtras();
         roomId = bundle.getString("id");
         roomName = bundle.getString("roomName");
+        userId = bundle.getString("userId");
+        username = bundle.getString("username");
 
         //设置toolbar标题
         toolbar.setTitle(roomName);
 
-        URL = getURL+roomId+"&page=1";
+        URL = getURL + roomId + "&page=1";
         new NewAsyncTask().execute(URL);
 
         try {
             mSocket = IO.socket("http://18.219.150.95:8001/");
             //mSocket = IO.socket("http://10.0.2.2:8001/");
             mSocket.on(Socket.EVENT_CONNECT, onConnectSuccess);
-            mSocket.on(Socket.EVENT_DISCONNECT,onDisconnect);
+            mSocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
 
             mSocket.on("join", onJoin);
             mSocket.on("leave", onLeave);
             mSocket.on("message", onMessage);
 
             mSocket.connect();
-            mSocket.emit("join",  "YIN", roomId);
+            mSocket.emit("join", username, roomId);
 
         } catch (URISyntaxException e) {
             e.printStackTrace();
@@ -124,13 +131,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    public void initView(){
+    public void initView() {
         editText = findViewById(R.id.edit_text);
         btn_send = (ImageButton) findViewById(R.id.send_button);
         btn_refresh = (ImageButton) findViewById(R.id.refresh);
         mlistview = (ListView) findViewById(R.id.listView);
 
-        adapter = new mAdapter(ChatActivity.this, mlist);
+        adapter = new mAdapter(ChatActivity.this, mlist, userId);
         //获取ListView对象，通过调用setAdapter方法为ListView设置Adapter设置适配器
         mlistview.setAdapter(adapter);
         mlistview.setOnScrollListener(this);
@@ -141,14 +148,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        URL = getURL+roomId+"&page=1";
+        URL = getURL + roomId + "&page=1";
         switch (view.getId()) {
             case R.id.refresh:
                 //点击刷新按钮回到第一页
                 new NewAsyncTask().execute(URL);
             case R.id.send_button:
                 //判断文本框是否为空
-                if(!TextUtils.isEmpty(editText.getText())){
+                if (!TextUtils.isEmpty(editText.getText())) {
                     String message = editText.getText().toString();
                     //执行post操作发送消息
                     new MyPostTask().execute(message);
@@ -159,71 +166,63 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     //清空文本框
                     editText.setText("");
                 }
-            }
+        }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         //Toolbar的事件---返回
-        if(item.getItemId() == android.R.id.home){
-            mSocket.emit("leave",  "YIN", roomId);
+        if (item.getItemId() == android.R.id.home) {
+            mSocket.emit("leave", username, roomId);
             finish();
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private ArrayList<Message> getJsonData(String url){
+    private ArrayList<Message> getJsonData(String url) {
         MessageList dataList = new MessageList();
         dataList.messages = new ArrayList<Message>();
         String jsonString = null;
         try {
-                jsonString = readStream(new URL(url).openStream());
-                JSONObject jsonObject;
+            jsonString = readStream(new URL(url).openStream());
+            JSONObject jsonObject;
 
-                try {
-                    //解析JSON数据到List中
-                    jsonObject = new JSONObject(jsonString);
-                    JSONObject data = jsonObject.getJSONObject("data");
-                    JSONArray messages = data.getJSONArray("messages");
-                    dataList.current_page = data.getString("current_page");
-                    dataList.total_pages = data.getString("total_pages");
-                    current = Integer.valueOf(dataList.current_page);
-                    total = Integer.valueOf(dataList.total_pages);
+            try {
+                //解析JSON数据到List中
+                jsonObject = new JSONObject(jsonString);
+                JSONObject data = jsonObject.getJSONObject("data");
+                JSONArray messages = data.getJSONArray("messages");
+                dataList.current_page = data.getString("current_page");
+                dataList.total_pages = data.getString("total_pages");
+                current = Integer.valueOf(dataList.current_page);
+                total = Integer.valueOf(dataList.total_pages);
 
-                    for (int i = 0; i < messages.length(); i++) {
-                        JSONObject message = messages.getJSONObject(i);
-                        dataList.messages.add(new Message(message.getString("id"),message.getString("chatroom_id"),
-                                message.getString("user_id"),message.getString("name"),
-                                message.getString("message"),message.getString("message_time")));
-
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                for (int i = 0; i < messages.length(); i++) {
+                    JSONObject message = messages.getJSONObject(i);
+                    dataList.messages.add(new Message(message.getString("id"), message.getString("chatroom_id"),
+                            message.getString("user_id"), message.getString("name"),
+                            message.getString("message"), message.getString("message_time")));
                 }
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        Log.d("Chat",jsonString);// 打印获取信息
-
+        Log.d("Chat", jsonString);// 打印获取信息
         return dataList.messages;
     }
 
-    private String readStream(InputStream is){
+    private String readStream(InputStream is) {
         InputStreamReader isr;
         String result = "";
         try {
             String line = "";
-            isr = new InputStreamReader(is,"utf-8");
+            isr = new InputStreamReader(is, "utf-8");
             BufferedReader br = new BufferedReader(isr);
-            while((line=br.readLine()) != null){
+            while ((line = br.readLine()) != null) {
                 result += line;
             }
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -239,13 +238,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         protected ArrayList<Message> doInBackground(String... params) {
             return getJsonData(params[0]);
         }
+
         // 设置适配器
         @Override
         protected void onPostExecute(ArrayList<Message> messages) {
             super.onPostExecute(messages);
             //倒序展示，最新的一条在最底部
             Collections.reverse(messages);
-            mAdapter adapter = new mAdapter(ChatActivity.this,messages);
+            mAdapter adapter = new mAdapter(ChatActivity.this, messages, userId);
             mlistview.setAdapter(adapter);
         }
     }
@@ -256,7 +256,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             BufferedReader bufferedReader = null;
             try {
                 URL url;
-                String urlParams = "chatroom_id=" + roomId + "&user_id=1155149902"+"&name=YIN"+"&message="+params[0];
+                String urlParams = "chatroom_id=" + roomId + "&user_id=" + userId + "&name=" + username + "&message=" + params[0];
                 url = new URL(postURL);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
@@ -285,16 +285,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     Log.d(TAG, "content    " + readLine);
                 }
 
-            } catch (ProtocolException e) {
-                e.printStackTrace();
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
             return null;
         }
-//        @Override
+
+        //        @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
         }
@@ -303,15 +300,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onScrollStateChanged(AbsListView absListView, int scrollState) {
-        if(scrollState==SCROLL_STATE_TOUCH_SCROLL){ //当屏幕停止滚动时
+        if (scrollState == SCROLL_STATE_TOUCH_SCROLL) { //当屏幕停止滚动时
             scrollFlag = true;
-        }
-        else if(scrollState==SCROLL_STATE_IDLE){
+        } else if (scrollState == SCROLL_STATE_IDLE) {
             scrollFlag = false;
             // 滚动停止时，判断滚动到底部, position是从0开始算起的
             if (mlistview.getLastVisiblePosition() == (mlistview.getCount() - 1)) {
                 int next = current - 1;
-                if(next >= 1){
+                if (next >= 1) {
                     URL = getURL + roomId + "&page=" + next;
                     new NewAsyncTask().execute(URL);
                 }
@@ -321,8 +317,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             // 判断滚动到顶部
             else if (mlistview.getFirstVisiblePosition() == 0) {
                 int before = current + 1;
-                if(before > total){
-                    Toast.makeText(ChatActivity.this,"This is the last page" , Toast.LENGTH_SHORT).show();
+                if (before > total) {
+                    Toast.makeText(ChatActivity.this, "This is the last page", Toast.LENGTH_SHORT).show();
                 } else {
                     URL = getURL + roomId + "&page=" + before;
                     new NewAsyncTask().execute(URL);
@@ -338,8 +334,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     private void sendNotification(String content, String title) {
         Intent intent = new Intent();
-        intent.setClass(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
         NotificationManager notifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         Notification notification = new NotificationCompat.Builder(this)
                 .setAutoCancel(true)
@@ -363,9 +358,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Log.e( TAG, "连接成功");
+                    Log.e(TAG, "连接成功");
                 }
-            } ) ;
+            });
         }
     };
 
@@ -375,47 +370,47 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Log.e( TAG, "退出连接");
+                    Log.e(TAG, "退出连接");
                 }
-            } ) ;
+            });
         }
-    } ;
+    };
 
     private Emitter.Listener onJoin = new Emitter.Listener() {
         //发送
         @Override
-        public void call (Object ...args) {
+        public void call(Object... args) {
 
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     JSONObject data = (JSONObject) args[0];
-                    Log.e( TAG, String.valueOf(data));
+                    Log.e(TAG, String.valueOf(data));
                     String str = data.optString("data");
 
-                    Log.e( TAG, "加入房间");
-                    Toast.makeText(ChatActivity.this,str, Toast.LENGTH_LONG).show();
+                    Log.e(TAG, "加入房间");
+                    Toast.makeText(ChatActivity.this, str, Toast.LENGTH_LONG).show();
                 }
-            } ) ;
+            });
         }
     };
 
     private Emitter.Listener onLeave = new Emitter.Listener() {
         //发送
         @Override
-        public void call (Object ...args) {
+        public void call(Object... args) {
             JSONObject data = (JSONObject) args[0];
-            Log.e( TAG, String.valueOf(data));
+            Log.e(TAG, String.valueOf(data));
             String str = data.optString("data");
-            Log.e( TAG, "离开房间");
-            Toast.makeText(ChatActivity.this,str, Toast.LENGTH_LONG).show();
+            Log.e(TAG, "离开房间");
+            Toast.makeText(ChatActivity.this, str, Toast.LENGTH_LONG).show();
         }
     };
 
     private Emitter.Listener onMessage = new Emitter.Listener() {
         //发送
         @Override
-        public void call (Object ...args) {
+        public void call(Object... args) {
 
             runOnUiThread(new Runnable() {
                 @Override
@@ -428,14 +423,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     new NewAsyncTask().execute(URL);
                     adapter.notifyDataSetChanged();
                 }
-            } ) ;
+            });
         }
     };
 
     @Override
     protected void onDestroy() {
-        if(mSocket != null) {
-            mSocket.disconnect( ) ;
+        if (mSocket != null) {
+            mSocket.disconnect();
             mSocket.off();
         }
         super.onDestroy();
