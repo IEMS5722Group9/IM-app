@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ChatActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".ChatActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -21,8 +21,8 @@
             android:layout_width="40dp"
             android:layout_height="35dp"
             android:layout_gravity="right"
-            android:background="@drawable/refresh"
-            android:paddingRight="10dp" />
+            android:layout_marginRight="10dp"
+            android:background="@drawable/refresh" />
 
     </androidx.appcompat.widget.Toolbar>
 
@@ -31,9 +31,9 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:divider="@android:color/transparent"
         android:stackFromBottom="true"
-        android:transcriptMode="alwaysScroll"
-        android:divider="@android:color/transparent" />
+        android:transcriptMode="alwaysScroll" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -42,23 +42,23 @@
 
         <EditText
             android:id="@+id/edit_text"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="#ffffff"
             android:hint="input"
             android:imeOptions="actionSend"
+            android:paddingLeft="10dp"
             android:textColor="#000000"
-            android:textColorHint="#989898"
-            android:textSize="16dp" />
+            android:textColorHint="#989898" />
 
         <ImageButton
             android:id="@+id/send_button"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/send_bg"
             android:gravity="center"
-            android:background="@drawable/send"
-            android:paddingRight="10dp" />
+            app:srcCompat="@android:drawable/ic_menu_send" />
     </LinearLayout>
 
 

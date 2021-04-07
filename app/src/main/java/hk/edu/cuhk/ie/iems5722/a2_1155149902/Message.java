@@ -18,31 +18,31 @@ public class Message {
     }
 
 
-    public String getMessage(){
+    public String getMessage() {
         return message;
     }
 
-    public String getTime(){
+    public String getTime() {
         return message_time;
     }
 
-    public String getUserId(){
+    public String getUserId() {
         return user_id;
     }
 
-    public String getName(){
+    public String getName() {
         return name;
     }
 
-    public void setMessage(String message){
+    public void setMessage(String message) {
         this.message = message;
     }
 
-    public void setTime(String message_time){
+    public void setTime(String message_time) {
         this.message_time = message_time;
     }
 
-    public void setName(String name){
+    public void setName(String name) {
         this.name = name;
     }
 

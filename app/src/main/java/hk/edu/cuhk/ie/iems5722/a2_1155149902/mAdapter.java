@@ -7,7 +7,11 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 public class mAdapter extends ArrayAdapter<Message> {
     public static String TAG = "mAdapter";
@@ -44,7 +48,6 @@ public class mAdapter extends ArrayAdapter<Message> {
             }
         } else {
             if (convertView == null) {
-
                 holder = new ViewHolder();
                 convertView = layoutInflater.inflate(R.layout.message_item_receive, viewGroup, false);
                 holder.name = (TextView) convertView.findViewById(R.id.r_user_name);
@@ -54,14 +57,16 @@ public class mAdapter extends ArrayAdapter<Message> {
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
-
         }
         //获取List集合里new好的控件和得到里面的数据
         // 需要写在if null外面， 否则scroll无法更新
         holder.name.setText(String.format("User: %s", m.getName()));
         holder.content.setText(m.getMessage());
-        holder.time.setText(m.getTime());
-
+        try {
+            holder.time.setText(convertDate(m.getTime()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         return convertView;
     }
 
@@ -71,4 +76,26 @@ public class mAdapter extends ArrayAdapter<Message> {
         TextView name;
     }
 
+    private static String convertDate(String target) throws ParseException {
+        SimpleDateFormat todayFormat = new SimpleDateFormat("HH:mm"); // define the format of time
+        SimpleDateFormat currentYearFormat = new SimpleDateFormat("MM-dd HH:mm");
+        SimpleDateFormat originFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date targetDate = originFormat.parse(target);
+        Date nowDate = new Date(System.currentTimeMillis());
+
+        Calendar pre = Calendar.getInstance();
+        pre.setTime(nowDate);
+        Calendar now = Calendar.getInstance();
+        now.setTime(targetDate);
+        if (now.get(Calendar.YEAR) == (pre.get(Calendar.YEAR))) {
+            int diffDay = now.get(Calendar.DAY_OF_YEAR) - pre.get(Calendar.DAY_OF_YEAR);
+            if (diffDay == 0) {
+                return todayFormat.format(originFormat.parse(target));
+            } else {
+                return currentYearFormat.format(originFormat.parse(target));
+            }
+        } else {
+            return target;
+        }
+    }
 }
