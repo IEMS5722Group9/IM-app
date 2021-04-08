@@ -6,6 +6,15 @@
     android:layout_height="match_parent"
     tools:context=".LoginActivity">
 
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="200dp"
+        android:layout_height="150dp"
+        android:layout_above="@id/user_input"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="80dp"
+        tools:srcCompat="@tools:sample/backgrounds/scenic" />
+
     <EditText
         android:id="@+id/user_input"
         android:layout_width="match_parent"
@@ -25,8 +34,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/user_input"
-        android:layout_marginTop="20dp"
         android:layout_marginLeft="65dp"
+        android:layout_marginTop="20dp"
         android:layout_marginRight="65dp"
         android:height="30dp"
         android:background="@drawable/input_area"
@@ -41,8 +50,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/password_input"
-        android:layout_marginTop="30dp"
         android:layout_marginLeft="65dp"
+        android:layout_marginTop="30dp"
         android:layout_marginRight="65dp"
         android:text="@string/login"
         android:textColor="@color/white"

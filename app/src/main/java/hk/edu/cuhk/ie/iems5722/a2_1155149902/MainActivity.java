@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,7 +34,7 @@ import java.net.URL;
 
 import io.socket.client.Socket;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Toolbar.OnMenuItemClickListener {
 
     private Button btn1;
     private ListView roomListView;
@@ -49,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.title);
         setSupportActionBar(toolbar);
-
+        toolbar.setOnMenuItemClickListener(this);
         //获取bundle传递的值
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
@@ -74,6 +75,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.toolbar_search:
+                Toast.makeText(MainActivity.this, "点击了弹出菜单search", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.toolbar_scan:
+                Toast.makeText(MainActivity.this, "点击了弹出菜单scan", Toast.LENGTH_SHORT).show();
+                break;
+        }
+        return true;
     }
 
     private ArrayList<Chatroom> getJsonData(String url) {
@@ -180,9 +193,9 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }
