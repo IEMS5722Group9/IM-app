@@ -85,7 +85,7 @@ public class LoginActivity extends AppCompatActivity {
 
         protected void onPostExecute(User me) {
             if (me == null) {
-                Toast.makeText(LoginActivity.this, "User does not exit", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, "User does not exist", Toast.LENGTH_SHORT).show();
             } else {
                 if (me.password.equals(password)) {
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
