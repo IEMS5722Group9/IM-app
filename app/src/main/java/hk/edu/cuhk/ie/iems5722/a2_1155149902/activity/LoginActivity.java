@@ -1,8 +1,7 @@
-package hk.edu.cuhk.ie.iems5722.a2_1155149902;
+package hk.edu.cuhk.ie.iems5722.a2_1155149902.activity;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -21,19 +20,19 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.domain.User;
 
 public class LoginActivity extends AppCompatActivity {
 //    private String getUserUrl = "http://10.0.2.2:5000/api/a3/get_user";

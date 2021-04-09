@@ -1,30 +1,42 @@
 package hk.edu.cuhk.ie.iems5722.a2_1155149902.ui.friends;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toolbar;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
+import android.view.MenuItem;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.activity.SearchActivity;
 
-public class FriendsFragment extends Fragment {
+public class FriendsFragment extends Fragment{
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        //设置另外的menu
+        menu.clear();
+        inflater.inflate(R.menu.menu_friends, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_friends, container, false);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.toolbar_search:
+                Log.e("click","click");
+                Intent intent= new Intent(getActivity(), SearchActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.toolbar_scan:
 
-        return root;
+                break;
+        }
+        return true;
     }
 }

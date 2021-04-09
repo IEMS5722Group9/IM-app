@@ -1,4 +1,4 @@
-package hk.edu.cuhk.ie.iems5722.a2_1155149902;
+package hk.edu.cuhk.ie.iems5722.a2_1155149902.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +10,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
 
 public class MainActivity2 extends AppCompatActivity {
 

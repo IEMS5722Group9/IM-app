@@ -13,10 +13,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,17 +23,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-import hk.edu.cuhk.ie.iems5722.a2_1155149902.ChatActivity;
-import hk.edu.cuhk.ie.iems5722.a2_1155149902.Chatroom;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.activity.ChatActivity;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.domain.Chatroom;
 //import hk.edu.cuhk.ie.iems5722.a2_1155149902.MainActivity;
-import hk.edu.cuhk.ie.iems5722.a2_1155149902.MainActivity2;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.activity.MainActivity2;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
-import hk.edu.cuhk.ie.iems5722.a2_1155149902.roomAdapter;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.adapter.roomAdapter;
 
 public class ChatFragment extends Fragment {
 

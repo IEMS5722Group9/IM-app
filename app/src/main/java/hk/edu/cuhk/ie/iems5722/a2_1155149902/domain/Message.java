@@ -1,4 +1,4 @@
-package hk.edu.cuhk.ie.iems5722.a2_1155149902;
+package hk.edu.cuhk.ie.iems5722.a2_1155149902.domain;
 
 public class Message {
     private String id;

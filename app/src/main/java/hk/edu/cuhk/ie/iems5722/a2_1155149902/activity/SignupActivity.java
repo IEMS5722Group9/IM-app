@@ -1,21 +1,13 @@
-package hk.edu.cuhk.ie.iems5722.a2_1155149902;
+package hk.edu.cuhk.ie.iems5722.a2_1155149902.activity;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Looper;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
-import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
-import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -31,6 +23,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
 
 public class SignupActivity extends AppCompatActivity {
     private String registerUrl = "http://10.0.2.2:5000/api/a3/register_user";

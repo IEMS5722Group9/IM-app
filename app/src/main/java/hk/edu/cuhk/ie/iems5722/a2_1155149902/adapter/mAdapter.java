@@ -1,4 +1,4 @@
-package hk.edu.cuhk.ie.iems5722.a2_1155149902;
+package hk.edu.cuhk.ie.iems5722.a2_1155149902.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,6 +12,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.domain.Message;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
 
 public class mAdapter extends ArrayAdapter<Message> {
     public static String TAG = "mAdapter";

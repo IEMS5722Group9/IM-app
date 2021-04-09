@@ -1,8 +1,8 @@
-package hk.edu.cuhk.ie.iems5722.a2_1155149902;
+package hk.edu.cuhk.ie.iems5722.a2_1155149902.domain;
 
 import java.util.ArrayList;
-import java.util.List;
 
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.domain.Message;
 
 
 public class MessageList {

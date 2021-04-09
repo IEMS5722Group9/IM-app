@@ -1,4 +1,4 @@
-package hk.edu.cuhk.ie.iems5722.a2_1155149902;
+package hk.edu.cuhk.ie.iems5722.a2_1155149902.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,10 +7,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-
 import java.util.ArrayList;
 
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.domain.Chatroom;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
 
 public class roomAdapter extends ArrayAdapter<Chatroom> {
