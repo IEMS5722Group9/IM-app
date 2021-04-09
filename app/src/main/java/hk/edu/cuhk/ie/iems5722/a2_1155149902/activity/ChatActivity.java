@@ -37,10 +37,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Objects;
 
-import hk.edu.cuhk.ie.iems5722.a2_1155149902.domain.Message;
-import hk.edu.cuhk.ie.iems5722.a2_1155149902.domain.MessageList;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.Message;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.MessageList;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
-import hk.edu.cuhk.ie.iems5722.a2_1155149902.adapter.mAdapter;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.adapter.MessageAdapter;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
@@ -53,7 +53,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private ImageButton btn_send;
     private ListView mlistview;
     private ArrayList<Message> mlist = new ArrayList<Message>();
-    public mAdapter adapter;
+    public MessageAdapter adapter;
 
     private String URL;
     //    private String getURL = "http://18.219.150.95/api/a3/get_messages?chatroom_id=";
@@ -78,7 +78,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.chat_list);
+        setContentView(R.layout.activity_chat);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -128,7 +128,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         btn_refresh = (ImageButton) findViewById(R.id.refresh);
         mlistview = (ListView) findViewById(R.id.listView);
 
-        adapter = new mAdapter(ChatActivity.this, mlist, userId);
+        adapter = new MessageAdapter(ChatActivity.this, mlist, userId);
         //获取ListView对象，通过调用setAdapter方法为ListView设置Adapter设置适配器
         mlistview.setAdapter(adapter);
         mlistview.setOnScrollListener(this);
@@ -236,7 +236,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             super.onPostExecute(messages);
             //倒序展示，最新的一条在最底部
             Collections.reverse(messages);
-            mAdapter adapter = new mAdapter(ChatActivity.this, messages, userId);
+            MessageAdapter adapter = new MessageAdapter(ChatActivity.this, messages, userId);
             mlistview.setAdapter(adapter);
         }
     }

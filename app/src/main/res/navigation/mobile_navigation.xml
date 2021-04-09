@@ -7,19 +7,19 @@
 
     <fragment
         android:id="@+id/navigation_chat"
-        android:name="hk.edu.cuhk.ie.iems5722.a2_1155149902.ui.chat.ChatFragment"
+        android:name="hk.edu.cuhk.ie.iems5722.a2_1155149902.fragment.ChatFragment"
         android:label="Chat"
         tools:layout="@layout/fragment_chat" />
 
     <fragment
         android:id="@+id/navigation_friends"
-        android:name="hk.edu.cuhk.ie.iems5722.a2_1155149902.ui.friends.FriendsFragment"
+        android:name="hk.edu.cuhk.ie.iems5722.a2_1155149902.fragment.FriendsFragment"
         android:label="Friends"
         tools:layout="@layout/fragment_friends" />
 
     <fragment
         android:id="@+id/navigation_me"
-        android:name="hk.edu.cuhk.ie.iems5722.a2_1155149902.ui.me.MeFragment"
+        android:name="hk.edu.cuhk.ie.iems5722.a2_1155149902.fragment.MeFragment"
         android:label="Me"
         tools:layout="@layout/fragment_me" />
 </navigation>

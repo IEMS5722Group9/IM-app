@@ -32,7 +32,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
-import hk.edu.cuhk.ie.iems5722.a2_1155149902.domain.User;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.User;
 
 public class LoginActivity extends AppCompatActivity {
 //    private String getUserUrl = "http://10.0.2.2:5000/api/a3/get_user";
@@ -88,7 +88,7 @@ public class LoginActivity extends AppCompatActivity {
             } else {
                 if (me.password.equals(password)) {
 
-                    Intent intent = new Intent(LoginActivity.this, MainActivity2.class);
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     Bundle data = new Bundle();
                     data.putString("userId", String.valueOf(me.id));
                     data.putString("username", String.valueOf(me.username));

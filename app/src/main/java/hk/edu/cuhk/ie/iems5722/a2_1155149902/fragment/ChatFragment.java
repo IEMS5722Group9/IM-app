@@ -1,4 +1,4 @@
-package hk.edu.cuhk.ie.iems5722.a2_1155149902.ui.chat;
+package hk.edu.cuhk.ie.iems5722.a2_1155149902.fragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -27,11 +27,11 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.activity.ChatActivity;
-import hk.edu.cuhk.ie.iems5722.a2_1155149902.domain.Chatroom;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.Chatroom;
 //import hk.edu.cuhk.ie.iems5722.a2_1155149902.MainActivity;
-import hk.edu.cuhk.ie.iems5722.a2_1155149902.activity.MainActivity2;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.activity.MainActivity;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
-import hk.edu.cuhk.ie.iems5722.a2_1155149902.adapter.roomAdapter;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.adapter.RoomAdapter;
 
 public class ChatFragment extends Fragment {
 
@@ -68,7 +68,7 @@ public class ChatFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        Bundle bundle = ((MainActivity2) context).toValue();
+        Bundle bundle = ((MainActivity) context).toValue();
         userId = bundle.getString("userId");
         username = bundle.getString("username");
     }
@@ -148,7 +148,7 @@ public class ChatFragment extends Fragment {
         @Override
         protected void onPostExecute(ArrayList<Chatroom> chatroom) {
             super.onPostExecute(chatroom);
-            roomAdapter adapter = new roomAdapter(getActivity(), chatroom);
+            RoomAdapter adapter = new RoomAdapter(getActivity(), chatroom);
             roomListView.setAdapter(adapter);
         }
     }
