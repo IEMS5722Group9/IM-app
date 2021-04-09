@@ -1,11 +1,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:icon="@drawable/add"
+    android:icon="@drawable/friends_add"
     tools:context=".MainActivity">
     <item
         android:id="@+id/action_add"
-        android:icon="@drawable/add"
+        android:icon="@drawable/friends_add"
         app:showAsAction="ifRoom"
         android:title="Add">
         <menu>

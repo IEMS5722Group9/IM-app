@@ -88,7 +88,8 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(LoginActivity.this, "User does not exist", Toast.LENGTH_SHORT).show();
             } else {
                 if (me.password.equals(password)) {
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+
+                    Intent intent = new Intent(LoginActivity.this, MainActivity2.class);
                     Bundle data = new Bundle();
                     data.putString("userId", String.valueOf(me.id));
                     data.putString("username", String.valueOf(me.username));

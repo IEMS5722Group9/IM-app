@@ -37,6 +37,7 @@
             android:layout_width="match_parent"
             android:layout_height="20dp"
             android:gravity="right"
+            android:paddingRight="5dp"
             android:text="时间"
             android:textColor="@color/white"
             android:textSize="16dp" />
