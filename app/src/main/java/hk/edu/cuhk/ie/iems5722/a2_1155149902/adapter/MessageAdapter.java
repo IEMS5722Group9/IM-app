@@ -17,7 +17,6 @@ import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.Message;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
 
 public class MessageAdapter extends ArrayAdapter<Message> {
-    public static String TAG = "mAdapter";
     public ArrayList<Message> mList;
     public Context mContext;
     public LayoutInflater layoutInflater;
