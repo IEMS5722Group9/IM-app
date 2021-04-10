@@ -1,15 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/container_add_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="TextView"
-        android:textSize="18sp" />
+        android:layout_height="50dp"
+        android:orientation="horizontal">
 
-</RelativeLayout>
+        <EditText
+            android:id="@+id/edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:hint="input id to search friends"
+            android:imeOptions="actionSend"
+            android:background="@drawable/search_border"
+            android:paddingLeft="10dp"
+            android:layout_marginLeft="20px"
+            android:layout_marginTop="20px"
+            android:layout_marginBottom="20px"
+            android:textColor="#000000"
+            android:textColorHint="#989898" />
+
+        <ImageButton
+            android:id="@+id/search_button"
+            android:layout_width="50dp"
+            android:layout_height="30dp"
+            android:background="#ffffff"
+            android:src="@drawable/search"
+            android:layout_gravity="center_vertical" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linear_friend"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:baselineAligned="false">
+
+        <TextView
+            android:id="@+id/text_name"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:layout_marginLeft="20px"
+            android:text="wang"
+            android:textSize="25dp"
+            android:textColor="#000"
+            android:gravity="center_vertical|center"
+            android:layout_marginRight="20px"></TextView>
+
+        <Button
+            android:id="@+id/add_button"
+            android:layout_width="75dp"
+            android:layout_height="50dp"
+            android:text="add" />
+    </LinearLayout>
+</LinearLayout>

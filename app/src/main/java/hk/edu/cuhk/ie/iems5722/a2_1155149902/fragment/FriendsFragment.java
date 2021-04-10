@@ -161,11 +161,20 @@ public class FriendsFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Bundle bundle = ((MainActivity) context).toValue();
+        userId = bundle.getString("userId");
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.toolbar_search:
-                Log.e("click", "click");
                 Intent intent = new Intent(getActivity(), SearchActivity.class);
+                Bundle data = new Bundle();
+                data.putString("userId", userId);
+                intent.putExtras(data);
                 startActivity(intent);
                 break;
             case R.id.toolbar_scan:
