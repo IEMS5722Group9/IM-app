@@ -47,13 +47,13 @@ public class FriendsFragment extends Fragment {
         setHasOptionsMenu(true);
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        Bundle bundle = ((MainActivity) context).toValue();
-        userId = bundle.getString("userId");
-        username = bundle.getString("username");
-    }
+//    @Override
+//    public void onAttach(Context context) {
+//        super.onAttach(context);
+//        Bundle bundle = ((MainActivity) context).toValue();
+//        userId = bundle.getString("userId");
+//        username = bundle.getString("username");
+//    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
