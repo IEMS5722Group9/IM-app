@@ -1,0 +1,21 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".fragment.FriendsFragment">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#DEDEDE" />
+
+    <TextView
+        android:id="@+id/friend_total"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:hint="You has followed 3 friends."
+        android:padding="10dp"
+        android:textSize="14sp" />
+
+</RelativeLayout>

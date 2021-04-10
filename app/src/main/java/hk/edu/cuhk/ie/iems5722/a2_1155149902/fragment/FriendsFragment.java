@@ -23,6 +23,7 @@ import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.User;
 
 public class FriendsFragment extends Fragment {
     private ListView friendListView;
+    ArrayList<User> friendsList = new ArrayList<>();
     private static String URL = "http://10.0.2.2:5000/api/a3/get_friends";
 
     @Override
@@ -35,8 +36,15 @@ public class FriendsFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_friends, container, false);
         friendListView = (ListView) root.findViewById(R.id.friends_list);
-        ArrayList<User> friendsList = new ArrayList<>();
+        friendsList = new ArrayList<>();
         friendsList.add(new User(1, "root"));
+        friendsList.add(new User(2, "root"));
+        friendsList.add(new User(3, "root"));
+        friendsList.add(new User(4, "root"));
+        friendsList.add(new User(1, "root"));
+        friendsList.add(new User(6, "root"));
+        friendsList.add(new User(7, "root"));
+        friendsList.add(new User(8, "root"));
         FriendAdapter adapter = new FriendAdapter(getActivity(), friendsList);
         friendListView.setAdapter(adapter);
         return root;

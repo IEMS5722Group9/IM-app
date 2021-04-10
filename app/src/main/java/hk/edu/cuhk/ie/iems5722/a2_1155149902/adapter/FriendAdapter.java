@@ -21,7 +21,13 @@ public class FriendAdapter extends ArrayAdapter<User> {
         super(context, 0, list);
         this.mContext = context;
         this.friendsList = list;
+        this.friendsList.add(new User());
         layoutInflater = LayoutInflater.from(context);
+    }
+
+    @Override
+    public boolean isEnabled(int position) {
+        return position != getCount() - 1;
     }
 
     @Override
@@ -29,25 +35,29 @@ public class FriendAdapter extends ArrayAdapter<User> {
         FriendAdapter.ViewHolder holder;
         User friend = getItem(i);
 
-        if (convertView == null) {
+        if (i + 1 != getCount()) {
             //layoutInflater.inflate
             //使用这个布局里面的控件
             holder = new FriendAdapter.ViewHolder();
-            convertView = layoutInflater.inflate(R.layout.item_friend, viewGroup,false);
+            convertView = layoutInflater.inflate(R.layout.item_friend, viewGroup, false);
             holder.name = (TextView) convertView.findViewById(R.id.friend_name);
-            convertView.setTag(holder);
-
+            holder.id = (TextView) convertView.findViewById(R.id.friend_id);
+            holder.name.setText(friend.username);
+            holder.id.setText("ID: " + friend.id);
         } else {
-            holder = (FriendAdapter.ViewHolder) convertView.getTag();
+            convertView = layoutInflater.inflate(R.layout.item_friend_total, viewGroup, false);
+            TextView count = convertView.findViewById(R.id.friend_total);
+            if (i != 0) {
+                count.setText("You have followed " + (getCount() - 1) + " friends.");
+            } else {
+                count.setText("You have not followed someone.");
+            }
         }
-
-        holder.name.setText(friend.username);
-
         return convertView;
     }
 
     private static class ViewHolder {
         TextView name;
-
+        TextView id;
     }
 }
