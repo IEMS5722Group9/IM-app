@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -28,11 +29,9 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.activity.AddFriendsActivity;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.activity.MainActivity;
-import hk.edu.cuhk.ie.iems5722.a2_1155149902.activity.SearchActivity;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.adapter.FriendAdapter;
-import hk.edu.cuhk.ie.iems5722.a2_1155149902.adapter.RoomAdapter;
-import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.Chatroom;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.User;
 
 public class FriendsFragment extends Fragment {
@@ -46,14 +45,6 @@ public class FriendsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
-
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        Bundle bundle = ((MainActivity) context).toValue();
-//        userId = bundle.getString("userId");
-//        username = bundle.getString("username");
-//    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -153,14 +144,6 @@ public class FriendsFragment extends Fragment {
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        //设置另外的menu
-        menu.clear();
-        inflater.inflate(R.menu.menu_friends, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         Bundle bundle = ((MainActivity) context).toValue();
@@ -168,17 +151,21 @@ public class FriendsFragment extends Fragment {
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        //设置另外的menu
+        menu.clear();
+        inflater.inflate(R.menu.menu_add_friends, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.toolbar_search:
-                Intent intent = new Intent(getActivity(), SearchActivity.class);
-                Bundle data = new Bundle();
-                data.putString("userId", userId);
-                intent.putExtras(data);
-                startActivity(intent);
-                break;
-            case R.id.toolbar_scan:
-                break;
+        if (item.getItemId() == R.id.toolbar_add) {
+            Intent intent = new Intent(getActivity(), AddFriendsActivity.class);
+            Bundle data = new Bundle();
+            data.putString("userId", userId);
+            intent.putExtras(data);
+            startActivity(intent);
         }
         return true;
     }
