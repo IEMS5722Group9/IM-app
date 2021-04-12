@@ -33,13 +33,15 @@ import hk.edu.cuhk.ie.iems5722.a2_1155149902.activity.AddFriendsActivity;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.activity.MainActivity;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.adapter.FriendAdapter;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.User;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.UrlUtil;
 
 public class FriendsFragment extends Fragment {
     private ListView friendListView;
     private ArrayList<User> friendsList;
     private String userId;
     private String username;
-    private static String URL = "http://10.0.2.2:5000/api/a3/get_friends?user_id=";
+    private String baseUrl = UrlUtil.BaseUrl;
+    private String URL = baseUrl + "/api/a3/get_friends?user_id=";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,16 +53,8 @@ public class FriendsFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_friends, container, false);
         friendListView = (ListView) root.findViewById(R.id.friends_list);
-//        new FriendsFragment.NewAsyncTask().execute(URL + userId);
+        new FriendsFragment.NewAsyncTask().execute(URL + userId);
         friendsList = new ArrayList<>();
-        friendsList.add(new User(1, "root"));
-        friendsList.add(new User(2, "root"));
-        friendsList.add(new User(3, "root"));
-        friendsList.add(new User(4, "root"));
-        friendsList.add(new User(1, "root"));
-        friendsList.add(new User(6, "root"));
-        friendsList.add(new User(7, "root"));
-        friendsList.add(new User(8, "root"));
         FriendAdapter adapter = new FriendAdapter(getActivity(), friendsList);
         friendListView.setAdapter(adapter);
         return root;

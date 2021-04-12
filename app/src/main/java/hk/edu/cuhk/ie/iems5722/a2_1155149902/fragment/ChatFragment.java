@@ -32,13 +32,15 @@ import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.Chatroom;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.activity.MainActivity;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.adapter.RoomAdapter;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.UrlUtil;
 
 public class ChatFragment extends Fragment {
 
     private ListView roomListView;
     private String userId;
     private String username;
-    private static String URL = "http://10.0.2.2:5000/api/a3/get_chatrooms";
+    private String baseUrl = UrlUtil.BaseUrl;
+    private String URL = baseUrl + "/api/a3/get_chatrooms";
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -46,7 +48,7 @@ public class ChatFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_chat, container, false);
 
         roomListView = (ListView) root.findViewById(R.id.chatroom_listView);
-//        new NewAsyncTask().execute(URL);
+        new NewAsyncTask().execute(URL);
 
         roomListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

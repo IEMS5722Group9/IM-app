@@ -33,10 +33,12 @@ import java.net.URL;
 
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.User;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.UrlUtil;
 
 public class LoginActivity extends AppCompatActivity {
+    private String baseUrl = UrlUtil.BaseUrl;
     //    private String getUserUrl = "http://10.0.2.2:5000/api/a3/get_user";
-    private String getUserUrl = "http://10.0.2.2:5000/api/a3/get_user";
+    private String getUserUrl = baseUrl + "/api/a3/get_user";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +58,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!TextUtils.isEmpty(user.getText()) && !TextUtils.isEmpty(password.getText())) {
-//                    new MyLogInTask().execute(user.getText().toString(), password.getText().toString());
+                    new MyLogInTask().execute(user.getText().toString(), password.getText().toString());
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     Bundle data = new Bundle();
                     data.putString("userId", "root");

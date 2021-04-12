@@ -39,6 +39,7 @@ import java.net.URL;
 import java.util.Objects;
 
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.UrlUtil;
 
 public class AddFriendsActivity extends AppCompatActivity implements View.OnClickListener {
     private String userId;
@@ -52,8 +53,9 @@ public class AddFriendsActivity extends AppCompatActivity implements View.OnClic
     private Button btn_add;
     private LinearLayout linear;
     private static final String TAG = "SearchActivity";
-    private String searchURL = "http://10.0.2.2:5000/api/a3/search_friend";
-    private String addURL = "http://10.0.2.2:5000/api/a3/add_friend";
+    private String baseUrl = UrlUtil.BaseUrl;
+    private String searchURL = baseUrl + "/api/a3/search_friend";
+    private String addURL = baseUrl + "/api/a3/add_friend";
     private final int REQUEST_PERMISION_CODE_CAMARE = 0;
     private final int RESULT_REQUEST_CODE = 1;
 

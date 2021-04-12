@@ -25,9 +25,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.UrlUtil;
 
 public class SignupActivity extends AppCompatActivity {
-    private String registerUrl = "http://10.0.2.2:5000/api/a3/register_user";
+    private String baseUrl = UrlUtil.BaseUrl;
+    private String registerUrl = baseUrl + "/api/a3/register_user";
     private boolean usernameExist = false;
 
     @Override

@@ -13,7 +13,7 @@
         android:layout_marginBottom="80dp"
         android:layout_centerInParent="true"
         android:layout_above="@id/user_input"
-        tools:srcCompat="@tools:sample/backgrounds/scenic" />
+        android:background="@drawable/cuhk" />
 
     <EditText
         android:id="@+id/user_input"

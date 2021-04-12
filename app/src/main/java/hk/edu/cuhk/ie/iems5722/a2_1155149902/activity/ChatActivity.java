@@ -41,6 +41,7 @@ import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.Message;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.MessageList;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.adapter.MessageAdapter;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.UrlUtil;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
@@ -56,10 +57,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     public MessageAdapter adapter;
 
     private String URL;
-    //    private String getURL = "http://18.219.150.95/api/a3/get_messages?chatroom_id=";
-    private String getURL = "http://10.0.2.2:5000/api/a3/get_messages?chatroom_id=";
-    //    private String postURL = "http://18.219.150.95/api/a3/send_message";
-    private String postURL = "http://10.0.2.2:5000/api/a3/send_message";
+    private String baseUrl = UrlUtil.BaseUrl;
+    private String getURL = baseUrl + "/api/a3/get_messages?chatroom_id=";
+    private String postURL = baseUrl + "/api/a3/send_message";
     private String roomId;
     private String roomName;
     private String userId;
