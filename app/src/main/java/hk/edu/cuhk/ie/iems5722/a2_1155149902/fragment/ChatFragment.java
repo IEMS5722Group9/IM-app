@@ -46,7 +46,7 @@ public class ChatFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_chat, container, false);
 
         roomListView = (ListView) root.findViewById(R.id.chatroom_listView);
-        new NewAsyncTask().execute(URL);
+//        new NewAsyncTask().execute(URL);
 
         roomListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
