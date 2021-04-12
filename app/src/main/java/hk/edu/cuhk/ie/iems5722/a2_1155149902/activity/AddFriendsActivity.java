@@ -63,7 +63,6 @@ public class AddFriendsActivity extends AppCompatActivity implements View.OnClic
 
         editText = findViewById(R.id.edit_text);
         btn_search = (ImageButton) findViewById(R.id.search_button);
-        // tv = (TextView) findViewById(R.id.text_view);
         btn_search.setOnClickListener(this);
         linear = (LinearLayout) findViewById(R.id.linear_friend);
         linear.setVisibility(View.GONE);
