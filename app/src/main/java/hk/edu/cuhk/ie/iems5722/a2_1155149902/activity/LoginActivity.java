@@ -35,7 +35,7 @@ import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.User;
 
 public class LoginActivity extends AppCompatActivity {
-//    private String getUserUrl = "http://10.0.2.2:5000/api/a3/get_user";
+    //    private String getUserUrl = "http://10.0.2.2:5000/api/a3/get_user";
     private String getUserUrl = "http://10.0.2.2:5000/api/a3/get_user";
 
     @Override
@@ -56,7 +56,13 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!TextUtils.isEmpty(user.getText()) && !TextUtils.isEmpty(password.getText())) {
-                    new MyLogInTask().execute(user.getText().toString(), password.getText().toString());
+//                    new MyLogInTask().execute(user.getText().toString(), password.getText().toString());
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    Bundle data = new Bundle();
+                    data.putString("userId", "root");
+                    data.putString("username", "admin");
+                    intent.putExtras(data);
+                    startActivity(intent);
                 } else {
                     Toast.makeText(LoginActivity.this, "Please input username and password", Toast.LENGTH_SHORT).show();
                 }
@@ -87,7 +93,6 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(LoginActivity.this, "User does not exist", Toast.LENGTH_SHORT).show();
             } else {
                 if (me.password.equals(password)) {
-
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     Bundle data = new Bundle();
                     data.putString("userId", String.valueOf(me.id));

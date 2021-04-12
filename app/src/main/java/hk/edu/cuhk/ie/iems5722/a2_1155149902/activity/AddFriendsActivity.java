@@ -21,6 +21,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+
+import com.example.qrcode.Constant;
+import com.example.qrcode.ScannerActivity;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,6 +54,8 @@ public class AddFriendsActivity extends AppCompatActivity implements View.OnClic
     private static final String TAG = "SearchActivity";
     private String searchURL = "http://10.0.2.2:5000/api/a3/search_friend";
     private String addURL = "http://10.0.2.2:5000/api/a3/add_friend";
+    private final int REQUEST_PERMISION_CODE_CAMARE = 0;
+    private final int RESULT_REQUEST_CODE = 1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -211,7 +217,6 @@ public class AddFriendsActivity extends AppCompatActivity implements View.OnClic
                 Toast.makeText(AddFriendsActivity.this, "Already add this user", Toast.LENGTH_LONG).show();
             }
         }
-
     }
 
     private String readStream(InputStream is) {
@@ -264,12 +269,12 @@ public class AddFriendsActivity extends AppCompatActivity implements View.OnClic
             goScanner();
         }
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
-            case 0: {
-                // If request is cancelled, the result arrays are empty.
+            case REQUEST_PERMISION_CODE_CAMARE: {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     goScanner();
@@ -279,18 +284,41 @@ public class AddFriendsActivity extends AppCompatActivity implements View.OnClic
         }
     }
 
-    private void goScanner(){
+
+    private void goScanner() {
         Toast.makeText(AddFriendsActivity.this, "已打开.", Toast.LENGTH_SHORT).show();
-//        IntentIntegrator integrator = new IntentIntegrator(this);
-//        integrator.initiateScan();
+        Intent intent = new Intent(this, ScannerActivity.class);
+        //这里可以用intent传递一些参数，比如扫码聚焦框尺寸大小，支持的扫码类型。
+//        //设置扫码框的宽
+//        intent.putExtra(Constant.EXTRA_SCANNER_FRAME_WIDTH, 400);
+//        //设置扫码框的高
+//        intent.putExtra(Constant.EXTRA_SCANNER_FRAME_HEIGHT, 400);
+//        //设置扫码框距顶部的位置
+//        intent.putExtra(Constant.EXTRA_SCANNER_FRAME_TOP_PADDING, 100);
+//        //设置是否启用从相册获取二维码。
+        intent.putExtra(Constant.EXTRA_IS_ENABLE_SCAN_FROM_PIC, true);
+//        Bundle bundle = new Bundle();
+//        //设置支持的扫码类型
+//        bundle.putSerializable(Constant.EXTRA_SCAN_CODE_TYPE, mHashMap);
+//        intent.putExtras(bundle);
+        startActivityForResult(intent, RESULT_REQUEST_CODE);
     }
 
-//    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-//        IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
-//        if (scanResult != null) {
-//            // handle scan result
-//            Toast.makeText(this,scanResult.toString(),Toast.LENGTH_SHORT).show();
-//        }
-//        // else continue with any other code you need in the method
-//    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case RESULT_REQUEST_CODE:
+                    if (data == null) return;
+                    String type = data.getStringExtra(Constant.EXTRA_RESULT_CODE_TYPE);
+                    String content = data.getStringExtra(Constant.EXTRA_RESULT_CONTENT);
+                    Toast.makeText(this, "codeType:" + type
+                            + "-----content:" + content, Toast.LENGTH_SHORT).show();
+                    break;
+                default:
+                    break;
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 }

@@ -1,2 +1,3 @@
+include ':YZxing-lib'
 include ':app'
 rootProject.name = "A1_1155149902"
