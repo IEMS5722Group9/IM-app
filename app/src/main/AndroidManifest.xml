@@ -37,7 +37,7 @@
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
             android:theme="@style/Theme.HelloWord.NoActionBar"  />
         <activity
-            android:name=".activity.SearchActivity"
+            android:name=".activity.AddFriendsActivity"
             android:label="Add friends"></activity>
     </application>
 
