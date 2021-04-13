@@ -59,12 +59,12 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (!TextUtils.isEmpty(user.getText()) && !TextUtils.isEmpty(password.getText())) {
                     new MyLogInTask().execute(user.getText().toString(), password.getText().toString());
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    Bundle data = new Bundle();
-                    data.putString("userId", "root");
-                    data.putString("username", "admin");
-                    intent.putExtras(data);
-                    startActivity(intent);
+//                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+//                    Bundle data = new Bundle();
+//                    data.putString("userId", "root");
+//                    data.putString("username", "admin");
+//                    intent.putExtras(data);
+//                    startActivity(intent);
                 } else {
                     Toast.makeText(LoginActivity.this, "Please input username and password", Toast.LENGTH_SHORT).show();
                 }

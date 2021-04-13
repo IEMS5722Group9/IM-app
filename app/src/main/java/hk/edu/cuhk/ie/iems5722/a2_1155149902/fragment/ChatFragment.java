@@ -28,10 +28,11 @@ import java.util.ArrayList;
 
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.activity.ChatActivity;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.Chatroom;
-//import hk.edu.cuhk.ie.iems5722.a2_1155149902.MainActivity;
+/* import hk.edu.cuhk.ie.iems5722.a2_1155149902.MainActivity; */
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.activity.MainActivity;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.adapter.RoomAdapter;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.HttpUtil;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.UrlUtil;
 
 public class ChatFragment extends Fragment {
@@ -75,65 +76,6 @@ public class ChatFragment extends Fragment {
         username = bundle.getString("username");
     }
 
-    private ArrayList<Chatroom> getJsonData(String url) {
-        ArrayList<Chatroom> roomList = new ArrayList<Chatroom>();
-        // readStream此句功能与url.openConnection().getInputStream()相同
-        // 可根据URL直接联网获取网络数据
-        // 返回值类型为InputStream
-        // 用URL必须前面引入：import java.net.URL;
-        String jsonString = null;
-        try {
-            jsonString = readStream(new URL(url).openStream());
-            JSONObject jsonObject;
-            Chatroom chatroom;
-            try {
-                //解析JSON数据到List中
-                jsonObject = new JSONObject(jsonString);
-                JSONArray jsonArray = jsonObject.getJSONArray("data");
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    jsonObject = jsonArray.getJSONObject(i);
-                    chatroom = new Chatroom();
-                    chatroom.room_id = jsonObject.getString("id");
-                    chatroom.room_name = jsonObject.getString("name");
-                    roomList.add(chatroom);
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        Log.d("Main", jsonString);// 打印获取信息
-
-        return roomList;
-    }
-
-    /*
-     * 通过InputStream去读取网络信息：
-     * 传来的参数是一个InputStream的字节流is，
-     * 通过InputStreamReader将字节流转化为字符流，
-     * 再通过BufferedReader将字符流以Buffer的形式读取出来，
-     * 最终拼接到result里面。
-     * 这样就完成了整个数据的读取。
-     * */
-    private String readStream(InputStream is) {
-        InputStreamReader isr;
-        String result = "";
-        try {
-            String line = "";
-            isr = new InputStreamReader(is, "utf-8");
-            BufferedReader br = new BufferedReader(isr);
-            while ((line = br.readLine()) != null) {
-                result += line;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-
     /*
      * 定义内部类：
      * <Params, Progress, Result>
@@ -143,7 +85,12 @@ public class ChatFragment extends Fragment {
         @Override
         protected ArrayList<Chatroom> doInBackground(String... params) {
             // params[0]为请求网站，因为只传了一个网址，所以只取0即可
-            return getJsonData(params[0]);
+            try {
+                return HttpUtil.fetchChatRoom(params[0]);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
         }
 
         // 设置适配器

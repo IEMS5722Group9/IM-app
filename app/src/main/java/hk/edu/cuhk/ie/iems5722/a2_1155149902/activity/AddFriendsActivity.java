@@ -39,6 +39,8 @@ import java.net.URL;
 import java.util.Objects;
 
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.User;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.HttpUtil;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.UrlUtil;
 
 public class AddFriendsActivity extends AppCompatActivity implements View.OnClickListener {
@@ -90,9 +92,8 @@ public class AddFriendsActivity extends AppCompatActivity implements View.OnClic
                     if (userId.equals(friend_id)) {
                         Toast.makeText(AddFriendsActivity.this, "Cannot add yourself!", Toast.LENGTH_SHORT).show();
                     } else {
-                        new MySearchTask().execute(friend_id);
+                        new MySearchTask().execute(searchURL, userId, friend_id);
                     }
-                    //adapter.notifyDataSetChanged();
                     //清空文本框
                     editText.setText("");
                 }
@@ -102,47 +103,15 @@ public class AddFriendsActivity extends AppCompatActivity implements View.OnClic
     class MySearchTask extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... params) {
-            BufferedReader bufferedReader = null;
-
             try {
-                URL url;
-                String urlParams = "&user_id=" + userId + "&friend_id=" + params[0];
-                url = new URL(searchURL);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-                connection.setConnectTimeout(10000);
-                connection.setRequestMethod("POST");
-
-                connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                connection.setRequestProperty("Content-Length", urlParams.length() + "");
-                connection.connect();
-
-                //设置输出流向服务器提交数据
-                OutputStream os = connection.getOutputStream();
-                os.write(urlParams.getBytes());
-                os.flush();
-
-                InputStream is = connection.getInputStream();
-                int responseCode = connection.getResponseCode();
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    String results = readStream(is);
-                    JSONObject jsonObject;
-                    jsonObject = new JSONObject(String.valueOf(results));
-                    String status = jsonObject.getString("status");
-
-                    if (status.equals("OK")) {
-                        userExist = true;
-                        JSONArray data = jsonObject.getJSONArray("data");
-                        jsonObject = data.getJSONObject(0);
-                        friend_id = jsonObject.getString("id");
-                        friend_name = jsonObject.getString("username");
-                    } else if (status.equals("ERROR")) {
-                        userExist = false;
-                    } else {
-                        return null;
-                    }
+                User friend = HttpUtil.searchFriend(params);
+                if (friend == null) {
+                    userExist = false;
+                } else {
+                    friend_id = String.valueOf(friend.id);
+                    friend_name = friend.username;
+                    userExist = true;
                 }
-
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
@@ -163,7 +132,7 @@ public class AddFriendsActivity extends AppCompatActivity implements View.OnClic
                 btn_add.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        new MyAddTask().execute(friend_id, friend_name);
+                        new MyAddTask().execute(addURL, userId, friend_id, friend_name);
                     }
                 });
             }
@@ -174,67 +143,27 @@ public class AddFriendsActivity extends AppCompatActivity implements View.OnClic
     class MyAddTask extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... params) {
-            BufferedReader bufferedReader = null;
             try {
-                URL url;
-                String urlParams = "user_id=" + userId + "&friend_id=" + params[0] + "&friend_name=" + params[1];
-                url = new URL(addURL);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-                connection.setConnectTimeout(10000);
-                connection.setRequestMethod("POST");
-
-                connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                connection.setRequestProperty("Content-Length", urlParams.length() + "");
-                connection.connect();
-
-                OutputStream os = connection.getOutputStream();
-                os.write(urlParams.getBytes());
-                os.flush();
-
-                InputStream is = connection.getInputStream();
-                int responseCode = connection.getResponseCode();
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    String results = readStream(is);
-                    JSONObject data;
-                    data = new JSONObject(String.valueOf(results));
-                    String status = data.getString("status");
-                    if (status.equals("OK")) {
-                        alreadyAdd = false;
-                    } else if (status.equals("ERROR")) {
-                        alreadyAdd = true;
-                    }
-                }
-
+                String status = HttpUtil.addFriend(params);
+                alreadyAdd = !status.equals("OK");
+                return status;
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
             return null;
         }
 
-        //        @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             if (alreadyAdd) {
                 Toast.makeText(AddFriendsActivity.this, "Already add this user", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(AddFriendsActivity.this, "Add success", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent();
+                intent.setAction("action.refreshFriend");
+                sendBroadcast(intent);
             }
         }
-    }
-
-    private String readStream(InputStream is) {
-        InputStreamReader isr;
-        String result = "";
-        try {
-            String line = "";
-            isr = new InputStreamReader(is, "utf-8");
-            BufferedReader br = new BufferedReader(isr);
-            while ((line = br.readLine()) != null) {
-                result += line;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return result;
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -312,10 +241,9 @@ public class AddFriendsActivity extends AppCompatActivity implements View.OnClic
             switch (requestCode) {
                 case RESULT_REQUEST_CODE:
                     if (data == null) return;
-                    String type = data.getStringExtra(Constant.EXTRA_RESULT_CODE_TYPE);
+//                    String type = data.getStringExtra(Constant.EXTRA_RESULT_CODE_TYPE);
                     String content = data.getStringExtra(Constant.EXTRA_RESULT_CONTENT);
-                    Toast.makeText(this, "codeType:" + type
-                            + "-----content:" + content, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "User ID:" + content, Toast.LENGTH_SHORT).show();
                     break;
                 default:
                     break;
