@@ -1,6 +1,7 @@
 package com.example.qrcode.utils;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -58,6 +59,15 @@ public class DecodeUtils {
             if (result != null) {
                 String text = result.getText();
                 if (!TextUtils.isEmpty(text)) {
+//                    ComponentName componetName = new ComponentName(
+//                            //这个是另外一个应用程序的包名
+//                            "hk.edu.cuhk.ie.iems5722.a2_1155149902.activity",
+//                            //这个参数是要启动的Activity
+//                            "AddFriendsActivity");
+//                    Intent intent= new Intent();
+//                    intent.putExtra("userId", text);
+//                    intent.setComponent(componetName);
+
                     Intent intent = new Intent(mContext.get(), ShowResultActivity.class);
                     intent.putExtra(Constant.EXTRA_RESULT_TEXT_FROM_PIC, text);
                     mContext.get().startActivity(intent);

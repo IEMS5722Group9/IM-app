@@ -183,7 +183,7 @@ public class ScannerActivity extends AppCompatActivity implements SurfaceHolder.
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (isEnableScanFromPicture) {
-            getMenuInflater().inflate(R.menu.menu_scan, menu);
+            getMenuInflater().inflate(R.menu.menu_scan_1, menu);
             return true;
         } else {
             return super.onCreateOptionsMenu(menu);
@@ -203,8 +203,6 @@ public class ScannerActivity extends AppCompatActivity implements SurfaceHolder.
                 ActivityCompat.requestPermissions(ScannerActivity.this
                         , new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE_WRITE_EXTERNAL_STORAGE);
             }
-        } else if (itemId == R.id.encode_barcode) {
-            startActivity(new Intent(ScannerActivity.this, BarcodeActivity.class));
         }
         return true;
     }

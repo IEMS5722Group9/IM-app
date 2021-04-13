@@ -21,11 +21,12 @@ public class ImageUtil {
      */
     public static boolean saveImageToGallery(Context context, Bitmap bitmap, String fileName) {
         // 保存图片至指定路径
-        String storePath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "qrcode";
-        File appDir = new File(storePath);
-        if (!appDir.exists()) {
-            appDir.mkdir();
-        }
+        String galleryPath = Environment.getExternalStorageDirectory()
+                + File.separator + Environment.DIRECTORY_DCIM
+                + File.separator + "Camera" + File.separator;
+        //String storePath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "qrcode";
+        File appDir = new File(galleryPath);
+
         File file = new File(appDir, fileName);
         try {
             FileOutputStream fos = new FileOutputStream(file);

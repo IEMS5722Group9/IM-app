@@ -25,18 +25,9 @@ import androidx.core.content.ContextCompat;
 import com.example.qrcode.Constant;
 import com.example.qrcode.ScannerActivity;
 
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Objects;
 
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.User;
@@ -244,6 +235,7 @@ public class AddFriendsActivity extends AppCompatActivity implements View.OnClic
 //                    String type = data.getStringExtra(Constant.EXTRA_RESULT_CODE_TYPE);
                     String content = data.getStringExtra(Constant.EXTRA_RESULT_CONTENT);
                     Toast.makeText(this, "User ID:" + content, Toast.LENGTH_SHORT).show();
+                    new MySearchTask().execute(searchURL, userId, content);
                     break;
                 default:
                     break;
@@ -251,4 +243,5 @@ public class AddFriendsActivity extends AppCompatActivity implements View.OnClic
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
+
 }

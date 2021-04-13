@@ -1,9 +1,14 @@
 package hk.edu.cuhk.ie.iems5722.a2_1155149902.fragment;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +34,12 @@ public class MeFragment extends Fragment implements View.OnClickListener{
     private int color_black, color_white;//黑色色块，白色色块
 
     private Bitmap qrcode_bitmap;//生成的二维码
+    private Context context;
+    public MeFragment (Context context){
+        //getContentResolver()需要通过activity来实现。
+        this.context = context;
+    }
+    public MeFragment (){ }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -37,6 +48,13 @@ public class MeFragment extends Fragment implements View.OnClickListener{
         btn_QR = (Button) root.findViewById(R.id.QR_button);
         btn_QR.setOnClickListener(this);
         iv_qrcode = (ImageView) root.findViewById(R.id.iv_qrcode);
+        iv_qrcode.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                imgChooseDialog();
+                return true;
+            }
+        });
         return root;
     }
 
@@ -74,9 +92,33 @@ public class MeFragment extends Fragment implements View.OnClickListener{
         String fileName = "qr_"+System.currentTimeMillis() + ".jpg";
         boolean isSaveSuccess = ImageUtil.saveImageToGallery(getActivity(), bitmap,fileName);
         if (isSaveSuccess) {
-            Toast.makeText(getActivity(), "图片已保存至本地", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), "Save picture successfully", Toast.LENGTH_LONG).show();
         } else {
-            Toast.makeText(getActivity(), "保存图片失败，请稍后重试", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Save failed", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /**
+     * 长按二维码图片弹出保存
+     */
+    private void imgChooseDialog(){
+        AlertDialog.Builder choiceBuilder = new AlertDialog.Builder(getActivity());
+        choiceBuilder.setCancelable(false);
+        choiceBuilder
+                .setTitle("Save QRcode to album？")
+                .setNeutralButton("Yes", new DialogInterface.OnClickListener() {//添加"Yes"按钮
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        saveImg(qrcode_bitmap);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {//添加取消
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                });
+        choiceBuilder.create();
+        choiceBuilder.show();
     }
 }
