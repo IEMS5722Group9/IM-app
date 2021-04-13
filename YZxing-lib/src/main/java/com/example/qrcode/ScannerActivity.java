@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,11 +24,18 @@ import com.example.qrcode.camera.CameraManager;
 import com.example.qrcode.decode.InactivityTimer;
 import com.example.qrcode.decode.ScannerHandler;
 import com.example.qrcode.utils.CommonUtils;
-import com.example.qrcode.utils.DecodeUtils;
 import com.example.qrcode.utils.UriUtils;
 import com.example.qrcode.view.ScannerView;
 import com.google.zxing.BarcodeFormat;
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.ChecksumException;
+import com.google.zxing.DecodeHintType;
+import com.google.zxing.FormatException;
+import com.google.zxing.NotFoundException;
+import com.google.zxing.RGBLuminanceSource;
 import com.google.zxing.Result;
+import com.google.zxing.common.HybridBinarizer;
+import com.google.zxing.qrcode.QRCodeReader;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -37,10 +43,11 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 
@@ -73,28 +80,28 @@ public class ScannerActivity extends AppCompatActivity implements SurfaceHolder.
 
     private boolean isEnableScanFromPicture;
     private boolean hasSurface;
-    private MyHandler mHandler;
+//    private MyHandler mHandler;
 
-    private static class MyHandler extends Handler {
-        private WeakReference<ScannerActivity> activity;
-
-        MyHandler(ScannerActivity mainActivityWeakReference) {
-            activity = new WeakReference<ScannerActivity>(mainActivityWeakReference);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            ScannerActivity activity = this.activity.get();
-            if (activity != null) {
-                if (msg.what == activity.MESSAGE_DECODE_FROM_BITMAP) {
-                    Bitmap bm = (Bitmap) msg.obj;
-                    DecodeUtils.DecodeAsyncTask decodeAsyncTask = new DecodeUtils.DecodeAsyncTask(activity);
-                    decodeAsyncTask.execute(bm);
-                }
-            }
-        }
-    }
+//    private static class MyHandler extends Handler {
+//        private WeakReference<ScannerActivity> activity;
+//
+//        MyHandler(ScannerActivity mainActivityWeakReference) {
+//            activity = new WeakReference<ScannerActivity>(mainActivityWeakReference);
+//        }
+//
+//        @Override
+//        public void handleMessage(Message msg) {
+//            super.handleMessage(msg);
+//            ScannerActivity activity = this.activity.get();
+//            if (activity != null) {
+//                if (msg.what == activity.MESSAGE_DECODE_FROM_BITMAP) {
+//                    Bitmap bm = (Bitmap) msg.obj;
+//                    DecodeUtils.DecodeAsyncTask decodeAsyncTask = new DecodeUtils.DecodeAsyncTask(activity);
+//                    decodeAsyncTask.execute(bm);
+//                }
+//            }
+//        }
+//    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -126,7 +133,7 @@ public class ScannerActivity extends AppCompatActivity implements SurfaceHolder.
         Log.e(TAG, "onCreate:decodeFormats :" + decodeFormats.size() + "--" + decodeFormats.toString());
         mInactivityTimer = new InactivityTimer(this);
         beepManager = new BeepManager(this);
-        mHandler = new MyHandler(this);
+//        mHandler = new MyHandler(this);
     }
 
     @Override
@@ -311,9 +318,12 @@ public class ScannerActivity extends AppCompatActivity implements SurfaceHolder.
                     String imagePath = UriUtils.getPicturePathFromUri(ScannerActivity.this, uri);
                     //对获取到的二维码照片进行压缩
                     Bitmap bitmap = CommonUtils.compressPicture(imagePath);
-                    Message message = mHandler.obtainMessage(MESSAGE_DECODE_FROM_BITMAP, bitmap);
-                    mHandler.sendMessage(message);
-                    Log.e(TAG, "onActivityResult: uri:" + uri.toString());
+                    Result result = decodeFromPicture(bitmap);
+                    String text = result.getText();
+                    Intent intent = new Intent();
+                    intent.putExtra(Constant.EXTRA_RESULT_CONTENT,  text);
+                    setResult(RESULT_OK, intent);
+                    finish();
                     break;
             }
         }
@@ -330,5 +340,30 @@ public class ScannerActivity extends AppCompatActivity implements SurfaceHolder.
         }
     }
 
+    private static Result decodeFromPicture(Bitmap bitmap) {
+        if (bitmap == null) return null;
+        int picWidth = bitmap.getWidth();
+        int picHeight = bitmap.getHeight();
+        int[] pix = new int[picWidth * picHeight];
+        Log.e(TAG, "decodeFromPicture:图片大小： " + bitmap.getByteCount() / 1024 / 1024 + "M");
+        bitmap.getPixels(pix, 0, picWidth, 0, 0, picWidth, picHeight);
+        //构造LuminanceSource对象
+        RGBLuminanceSource rgbLuminanceSource = new RGBLuminanceSource(picWidth
+                , picHeight, pix);
+        BinaryBitmap bb = new BinaryBitmap(new HybridBinarizer(rgbLuminanceSource));
+        //因为解析的条码类型是二维码，所以这边用QRCodeReader最合适。
+        QRCodeReader qrCodeReader = new QRCodeReader();
+        Map<DecodeHintType, Object> hints = new EnumMap<>(DecodeHintType.class);
+        hints.put(DecodeHintType.CHARACTER_SET, "utf-8");
+        hints.put(DecodeHintType.TRY_HARDER, true);
+        Result result = null;
+        try {
+            result = qrCodeReader.decode(bb, hints);
+            return result;
+        } catch (NotFoundException | ChecksumException | FormatException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 }

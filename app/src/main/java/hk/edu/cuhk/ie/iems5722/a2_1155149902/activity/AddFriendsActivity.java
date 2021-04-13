@@ -234,9 +234,13 @@ public class AddFriendsActivity extends AppCompatActivity implements View.OnClic
                     if (data == null) return;
 //                    String type = data.getStringExtra(Constant.EXTRA_RESULT_CODE_TYPE);
                     String content = data.getStringExtra(Constant.EXTRA_RESULT_CONTENT);
-                    Toast.makeText(this, "User ID:" + content, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Find User ID:" + content, Toast.LENGTH_SHORT).show();
                     new MySearchTask().execute(searchURL, userId, content);
                     break;
+//                case "scanResult":
+//                    String content = data.getStringExtra(Constant.EXTRA_RESULT_CONTENT);
+//                    Toast.makeText(this, "User ID:" + content, Toast.LENGTH_SHORT).show();
+//                    new MySearchTask().execute(searchURL, userId, content);
                 default:
                     break;
             }
