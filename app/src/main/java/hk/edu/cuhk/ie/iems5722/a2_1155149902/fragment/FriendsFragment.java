@@ -1,7 +1,9 @@
 package hk.edu.cuhk.ie.iems5722.a2_1155149902.fragment;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,6 +29,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.activity.AddFriendsActivity;
@@ -47,16 +50,28 @@ public class FriendsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("action.refreshFriend");
+        requireActivity().registerReceiver(mRefreshBroadcastReceiver, intentFilter);
     }
+
+    // broadcast receiver
+    private BroadcastReceiver mRefreshBroadcastReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals("action.refreshFriend")) {
+                new FriendsFragment.NewAsyncTask().execute(URL + userId);
+            }
+        }
+    };
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_friends, container, false);
         friendListView = (ListView) root.findViewById(R.id.friends_list);
         new FriendsFragment.NewAsyncTask().execute(URL + userId);
-        friendsList = new ArrayList<>();
-        FriendAdapter adapter = new FriendAdapter(getActivity(), friendsList);
-        friendListView.setAdapter(adapter);
         return root;
     }
 
@@ -163,5 +178,12 @@ public class FriendsFragment extends Fragment {
             startActivity(intent);
         }
         return true;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        requireActivity().unregisterReceiver(mRefreshBroadcastReceiver);
+
     }
 }

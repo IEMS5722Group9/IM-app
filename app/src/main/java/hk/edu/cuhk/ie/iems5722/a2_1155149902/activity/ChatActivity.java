@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.Message;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.MessageList;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.adapter.MessageAdapter;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.HttpUtil;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.UrlUtil;
 import io.socket.client.IO;
 import io.socket.client.Socket;
@@ -53,10 +55,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private EditText editText;
     private ImageButton btn_send;
     private ListView mlistview;
-    private ArrayList<Message> mlist = new ArrayList<Message>();
-    public MessageAdapter adapter;
+    private ArrayList<Message> mlist = new ArrayList<>();
 
-    private String URL;
     private String baseUrl = UrlUtil.BaseUrl;
     private String getURL = baseUrl + "/api/a3/get_messages?chatroom_id=";
     private String postURL = baseUrl + "/api/a3/send_message";
@@ -64,12 +64,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private String roomName;
     private String userId;
     private String username;
-    private int total;
-    private int current;
 
-    private int lastVisibleItemPosition = 0;// 标记上次滑动位置，初始化默认为0
-    private boolean scrollFlag = false;// 标记是否滑动
-    private boolean isFirstItem = false;
+    public Boolean isFirstRow;
+    public Boolean isLoading = false;
+    public Boolean isLastPage = false;
+    public int page;
+    public int total_page;
+
     private ImageButton btn_refresh;
     //创建通知管理器
     private NotificationManager notificationManager;
@@ -100,8 +101,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         //设置toolbar标题
         toolbar.setTitle(roomName);
 
-        URL = getURL + roomId + "&page=1";
-        new NewAsyncTask().execute(URL);
 
         try {
             mSocket = IO.socket("http://18.219.150.95:8001/");
@@ -119,7 +118,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-
+        getURL = getURL + roomId + "&page=";
+        new NewAsyncTask().execute(getURL + 1);
     }
 
     public void initView() {
@@ -128,9 +128,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         btn_refresh = (ImageButton) findViewById(R.id.refresh);
         mlistview = (ListView) findViewById(R.id.listView);
 
-        adapter = new MessageAdapter(ChatActivity.this, mlist, userId);
-        //获取ListView对象，通过调用setAdapter方法为ListView设置Adapter设置适配器
-        mlistview.setAdapter(adapter);
         mlistview.setOnScrollListener(this);
 
         btn_send.setOnClickListener(this);
@@ -139,23 +136,25 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        URL = getURL + roomId + "&page=1";
         switch (view.getId()) {
             case R.id.refresh:
                 //点击刷新按钮回到第一页
-                new NewAsyncTask().execute(URL);
+                mlist = new ArrayList<>();
+                new NewAsyncTask().execute(getURL + 1);
             case R.id.send_button:
                 //判断文本框是否为空
                 if (!TextUtils.isEmpty(editText.getText())) {
                     String message = editText.getText().toString();
-                    //执行post操作发送消息
-                    new MyPostTask().execute(message);
-                    //发送消息后刷新回到最新一页
-//                    new NewAsyncTask().execute(URL);
-//                    //nofify放在mAdapter里面无效，要在主线程中执行notifyDataSetChanged操作
-                    adapter.notifyDataSetChanged();
+                    if (message.length() > 0 && message.length() < 200) {
+                        //执行post操作发送消息
+                        new MyPostTask().execute(postURL, roomId, userId, username, message);
+                    } else if (message.length() > 200) {
+                        Toast.makeText(this, "Message too long", Toast.LENGTH_SHORT).show();
+                    }
                     //清空文本框
                     editText.setText("");
+                } else {
+                    Toast.makeText(this, "Input something", Toast.LENGTH_SHORT).show();
                 }
         }
     }
@@ -170,119 +169,47 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         return super.onOptionsItemSelected(item);
     }
 
-    private ArrayList<Message> getJsonData(String url) {
-        MessageList dataList = new MessageList();
-        dataList.messages = new ArrayList<Message>();
-        String jsonString = null;
-        try {
-            jsonString = readStream(new URL(url).openStream());
-            JSONObject jsonObject;
-
-            try {
-                //解析JSON数据到List中
-                jsonObject = new JSONObject(jsonString);
-                JSONObject data = jsonObject.getJSONObject("data");
-                JSONArray messages = data.getJSONArray("messages");
-                dataList.current_page = data.getString("current_page");
-                dataList.total_pages = data.getString("total_pages");
-                current = Integer.valueOf(dataList.current_page);
-                total = Integer.valueOf(dataList.total_pages);
-
-                for (int i = 0; i < messages.length(); i++) {
-                    JSONObject message = messages.getJSONObject(i);
-                    dataList.messages.add(new Message(message.getString("id"), message.getString("chatroom_id"),
-                            message.getString("user_id"), message.getString("name"),
-                            message.getString("message"), message.getString("message_time")));
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Log.d("Chat", jsonString);// 打印获取信息
-        return dataList.messages;
-    }
-
-    private String readStream(InputStream is) {
-        InputStreamReader isr;
-        String result = "";
-        try {
-            String line = "";
-            isr = new InputStreamReader(is, "utf-8");
-            BufferedReader br = new BufferedReader(isr);
-            while ((line = br.readLine()) != null) {
-                result += line;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
     /*
      * 定义内部类：
      * <Params, Progress, Result>
      * */
-    class NewAsyncTask extends AsyncTask<String, Void, ArrayList<Message>> {
+    class NewAsyncTask extends AsyncTask<String, Void, MessageList> {
         @Override
-        protected ArrayList<Message> doInBackground(String... params) {
-            return getJsonData(params[0]);
+        protected MessageList doInBackground(String... params) {
+            try {
+                return HttpUtil.fetchMessage(params[0]);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+            return null;
         }
 
         // 设置适配器
         @Override
-        protected void onPostExecute(ArrayList<Message> messages) {
-            super.onPostExecute(messages);
-            //倒序展示，最新的一条在最底部
-            Collections.reverse(messages);
-            MessageAdapter adapter = new MessageAdapter(ChatActivity.this, messages, userId);
+        protected void onPostExecute(MessageList newList) {
+            super.onPostExecute(newList);
+            page = Integer.parseInt(newList.current_page);
+            total_page = Integer.parseInt(newList.total_pages);
+            mlist.addAll(0, newList.messages);
+            MessageAdapter adapter = new MessageAdapter(ChatActivity.this, mlist, userId);
             mlistview.setAdapter(adapter);
+            mlistview.setSelection(newList.messages.size());
+            Toast.makeText(ChatActivity.this, "Load Success", Toast.LENGTH_SHORT).show();
         }
     }
 
     class MyPostTask extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... params) {
-            BufferedReader bufferedReader = null;
             try {
-                URL url;
-                String urlParams = "chatroom_id=" + roomId + "&user_id=" + userId + "&name=" + username + "&message=" + params[0];
-                url = new URL(postURL);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-                Log.d(TAG, postURL + "?" + urlParams);
-
-                connection.setConnectTimeout(10000);
-                connection.setRequestMethod("POST");
-
-                //注意添加的类型和长度，否则 invalid params
-                connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                connection.setRequestProperty("Content-Length", urlParams.length() + "");
-                connection.connect();
-
-                //设置输出流向服务器提交数据
-                OutputStream os = connection.getOutputStream();
-                os.write(urlParams.getBytes());
-                os.flush();
-
-                int responseCode = connection.getResponseCode();
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    Log.d(TAG, "success");
-
-                    InputStream inputStream = connection.getInputStream();
-                    bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                    String readLine = bufferedReader.readLine();
-                    Log.d(TAG, "content    " + readLine);
-                }
-
-            } catch (IOException e) {
+                HttpUtil.postMessage(params);
+            } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
             return null;
         }
 
-        //        @Override
+        @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
         }
@@ -290,37 +217,27 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public void onScrollStateChanged(AbsListView absListView, int scrollState) {
-        if (scrollState == SCROLL_STATE_TOUCH_SCROLL) { //当屏幕停止滚动时
-            scrollFlag = true;
-        } else if (scrollState == SCROLL_STATE_IDLE) {
-            scrollFlag = false;
-            // 滚动停止时，判断滚动到底部, position是从0开始算起的
-            if (mlistview.getLastVisiblePosition() == (mlistview.getCount() - 1)) {
-                int next = current - 1;
-                if (next >= 1) {
-                    URL = getURL + roomId + "&page=" + next;
-                    new NewAsyncTask().execute(URL);
-                }
-                adapter.notifyDataSetChanged();
-
-            }
-            // 判断滚动到顶部
-            else if (mlistview.getFirstVisiblePosition() == 0) {
-                int before = current + 1;
-                if (before > total) {
-                    Toast.makeText(ChatActivity.this, "This is the last page", Toast.LENGTH_SHORT).show();
-                } else {
-                    URL = getURL + roomId + "&page=" + before;
-                    new NewAsyncTask().execute(URL);
-                    adapter.notifyDataSetChanged();
-                }
-            }
+    public void onScroll(AbsListView view, int first, int visible, int total) {
+        if (first == 0) {
+            isFirstRow = true;
+        } else {
+            isLoading = false;
         }
     }
 
-    public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-        lastVisibleItemPosition = firstVisibleItem + visibleItemCount;
+    @Override
+    public void onScrollStateChanged(AbsListView view, int scrollState) {
+        if (isFirstRow && !isLoading && !isLastPage && scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
+            page = page + 1;
+            if (page <= total_page) {
+                new NewAsyncTask().execute(getURL + page);
+                isFirstRow = false;
+                isLoading = true;
+            } else {
+                Toast.makeText(ChatActivity.this, "This is the last page", Toast.LENGTH_SHORT).show();
+                isLastPage = true;
+            }
+        }
     }
 
     private void sendNotification(String content, String title) {
@@ -410,9 +327,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     String msg = data.optString("message");
                     String room = data.optString("chatroom_id");
                     sendNotification(msg, room);
-
-                    new NewAsyncTask().execute(URL);
-                    adapter.notifyDataSetChanged();
+                    mlist = new ArrayList<>();
+                    new NewAsyncTask().execute(getURL + 1);
                 }
             });
         }
@@ -425,6 +341,5 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             mSocket.off();
         }
         super.onDestroy();
-
     }
 }
