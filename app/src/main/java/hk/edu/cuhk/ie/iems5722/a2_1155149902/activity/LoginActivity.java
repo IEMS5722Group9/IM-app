@@ -33,6 +33,7 @@ import java.net.URL;
 
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.User;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.HttpUtil;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.UrlUtil;
 
 public class LoginActivity extends AppCompatActivity {
@@ -58,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!TextUtils.isEmpty(user.getText()) && !TextUtils.isEmpty(password.getText())) {
-                    new MyLogInTask().execute(user.getText().toString(), password.getText().toString());
+                    new MyLogInTask().execute(getUserUrl, user.getText().toString(), password.getText().toString());
 //                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
 //                    Bundle data = new Bundle();
 //                    data.putString("userId", "root");
@@ -73,17 +74,13 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     class MyLogInTask extends AsyncTask<String, Void, User> {
-        String username;
         String password;
 
         @Override
         protected User doInBackground(String... params) {
-            User me;
-            username = params[0];
-            password = params[1];
+            password = params[2];
             try {
-                me = getUser(username);
-                return me;
+                return HttpUtil.getUser(params);
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
@@ -106,54 +103,6 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         }
-    }
-
-    private User getUser(String username) throws IOException, JSONException {
-        URL url = new URL(getUserUrl);
-        String urlParams = "username=" + username;
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-        conn.setConnectTimeout(10000);
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-        conn.setRequestProperty("Content-Length", urlParams.length() + "");
-        conn.connect();
-
-        OutputStream os = conn.getOutputStream();
-        os.write(urlParams.getBytes());
-        os.flush();
-
-        InputStream is = conn.getInputStream();
-        int responseCode = conn.getResponseCode();
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            String results = readStream(is);
-            JSONObject data;
-            data = new JSONObject(String.valueOf(results));
-            String status = data.getString("status");
-            if (status.equals("OK")) {
-                JSONObject user = data.getJSONArray("data").getJSONObject(0);
-                return new User(Integer.parseInt(user.getString("id")), user.getString("username"), user.getString("password"));
-            } else {
-                return null;
-            }
-        }
-        return null;
-    }
-
-    private String readStream(InputStream is) {
-        InputStreamReader isr;
-        String result = "";
-        try {
-            String line = "";
-            isr = new InputStreamReader(is, "utf-8");
-            BufferedReader br = new BufferedReader(isr);
-            while ((line = br.readLine()) != null) {
-                result += line;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return result;
     }
 
     private SpannableStringBuilder getSignupStyle() {

@@ -31,6 +31,11 @@ public class FriendAdapter extends ArrayAdapter<User> {
     }
 
     @Override
+    public User getItem(int position) {
+        return this.friendsList.get(position);
+    }
+
+    @Override
     public View getView(int i, View convertView, ViewGroup viewGroup) {
         FriendAdapter.ViewHolder holder;
         User friend = getItem(i);

@@ -24,7 +24,7 @@ import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.QRCodeUtil;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.activity.MainActivity;
 
-public class MeFragment extends Fragment implements View.OnClickListener{
+public class MeFragment extends Fragment implements View.OnClickListener {
     private String userId;
     private Button btn_QR;
     private ImageView iv_qrcode;
@@ -35,11 +35,14 @@ public class MeFragment extends Fragment implements View.OnClickListener{
 
     private Bitmap qrcode_bitmap;//生成的二维码
     private Context context;
-    public MeFragment (Context context){
+
+    public MeFragment(Context context) {
         //getContentResolver()需要通过activity来实现。
         this.context = context;
     }
-    public MeFragment (){ }
+
+    public MeFragment() {
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -86,11 +89,12 @@ public class MeFragment extends Fragment implements View.OnClickListener{
 
     /**
      * 保存图片至本地
+     *
      * @param bitmap
      */
-    private void saveImg(Bitmap bitmap){
-        String fileName = "qr_"+System.currentTimeMillis() + ".jpg";
-        boolean isSaveSuccess = ImageUtil.saveImageToGallery(getActivity(), bitmap,fileName);
+    private void saveImg(Bitmap bitmap) {
+        String fileName = "qr_" + System.currentTimeMillis() + ".jpg";
+        boolean isSaveSuccess = ImageUtil.saveImageToGallery(getActivity(), bitmap, fileName);
         if (isSaveSuccess) {
             Toast.makeText(getActivity(), "Save picture successfully", Toast.LENGTH_LONG).show();
         } else {
@@ -101,7 +105,7 @@ public class MeFragment extends Fragment implements View.OnClickListener{
     /**
      * 长按二维码图片弹出保存
      */
-    private void imgChooseDialog(){
+    private void imgChooseDialog() {
         AlertDialog.Builder choiceBuilder = new AlertDialog.Builder(getActivity());
         choiceBuilder.setCancelable(false);
         choiceBuilder

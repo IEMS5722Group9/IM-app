@@ -21,21 +21,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationCompat;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Objects;
 
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.Message;
@@ -101,7 +93,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         //设置toolbar标题
         toolbar.setTitle(roomName);
 
-
         try {
             mSocket = IO.socket("http://18.219.150.95:8001/");
             //mSocket = IO.socket("http://10.0.2.2:8001/");
@@ -119,7 +110,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             e.printStackTrace();
         }
         getURL = getURL + roomId + "&page=";
-        new NewAsyncTask().execute(getURL + 1);
+        new MyGetTask().execute(getURL + 1);
     }
 
     public void initView() {
@@ -140,7 +131,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.refresh:
                 //点击刷新按钮回到第一页
                 mlist = new ArrayList<>();
-                new NewAsyncTask().execute(getURL + 1);
+                new MyGetTask().execute(getURL + 1);
             case R.id.send_button:
                 //判断文本框是否为空
                 if (!TextUtils.isEmpty(editText.getText())) {
@@ -173,7 +164,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
      * 定义内部类：
      * <Params, Progress, Result>
      * */
-    class NewAsyncTask extends AsyncTask<String, Void, MessageList> {
+    class MyGetTask extends AsyncTask<String, Void, MessageList> {
         @Override
         protected MessageList doInBackground(String... params) {
             try {
@@ -230,7 +221,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         if (isFirstRow && !isLoading && !isLastPage && scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
             page = page + 1;
             if (page <= total_page) {
-                new NewAsyncTask().execute(getURL + page);
+                new MyGetTask().execute(getURL + page);
                 isFirstRow = false;
                 isLoading = true;
             } else {
@@ -279,6 +270,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 @Override
                 public void run() {
                     Log.e(TAG, "退出连接");
+//                    Toast.makeText(, "Disconnected, Please check your internet connection", Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -328,7 +320,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     String room = data.optString("chatroom_id");
                     sendNotification(msg, room);
                     mlist = new ArrayList<>();
-                    new NewAsyncTask().execute(getURL + 1);
+                    new MyGetTask().execute(getURL + 1);
                 }
             });
         }
