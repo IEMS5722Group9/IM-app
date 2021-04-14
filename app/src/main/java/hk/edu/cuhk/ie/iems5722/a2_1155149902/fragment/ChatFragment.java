@@ -38,6 +38,7 @@ import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.UrlUtil;
 public class ChatFragment extends Fragment {
 
     private ListView roomListView;
+    private String roomId;
     private String userId;
     private String username;
     private String baseUrl = UrlUtil.BaseUrl;
@@ -57,7 +58,7 @@ public class ChatFragment extends Fragment {
                 TextView tv = (TextView) view.findViewById(R.id.room_name);
                 Intent intent = new Intent(getActivity(), ChatActivity.class);
                 Bundle bundle = new Bundle();
-                bundle.putString("id", String.valueOf(position + 1));
+                bundle.putString("id", roomId);
                 bundle.putString("roomName", tv.getText().toString());
                 bundle.putString("userId", userId);
                 bundle.putString("username", username);
@@ -87,7 +88,7 @@ public class ChatFragment extends Fragment {
         protected ArrayList<Chatroom> doInBackground(String... params) {
             // params[0]为请求网站，因为只传了一个网址，所以只取0即可
             try {
-                return HttpUtil.fetchChatRoom(params[0]);
+                return fetchChatRoom(params[0]);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -101,5 +102,35 @@ public class ChatFragment extends Fragment {
             RoomAdapter adapter = new RoomAdapter(getActivity(), chatroom);
             roomListView.setAdapter(adapter);
         }
+    }
+
+    public ArrayList<Chatroom> fetchChatRoom(String url) throws IOException {
+        ArrayList<Chatroom> rList = new ArrayList<>();
+        String results = HttpUtil.readStream(new URL(url).openStream());
+        try {
+            JSONArray data = new JSONObject(results).getJSONArray("data");
+            for (int i = 0; i < data.length(); i++) {
+                JSONObject chatroom = data.getJSONObject(i);
+                //分割私聊聊天室名字
+                roomId = chatroom.getString("id");
+                String name = chatroom.getString("name");
+                String type = chatroom.getString("type");
+                if(type.equals("person")){
+                    String[] chatroom_name = name.split("&");
+                    for (int j = 0; j < 2; j++) {
+                        if(chatroom_name[j].equals(username)){
+                            continue;
+                        }
+                        name = chatroom_name[j];
+                    }
+                }
+                rList.add(new Chatroom(roomId, name));
+                //rList.add(new Chatroom(chatroom.getString("id"), chatroom.getString("name")));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.d("Chatrooms", results);// 打印获取信息
+        return rList;
     }
 }

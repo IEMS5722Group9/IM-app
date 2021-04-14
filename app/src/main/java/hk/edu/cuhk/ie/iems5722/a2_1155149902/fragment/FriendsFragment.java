@@ -19,6 +19,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import org.json.JSONException;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -38,11 +40,15 @@ public class FriendsFragment extends Fragment {
     private String username;
     private String baseUrl = UrlUtil.BaseUrl;
     private String URL = baseUrl + "/api/a3/get_friends?user_id=";
+    private String addURL = baseUrl + "/api/a3/add_chatroom?";
+    private String type = "person";
+    private boolean alreadyAdd = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("action.refreshFriend");
         requireActivity().registerReceiver(mRefreshBroadcastReceiver, intentFilter);
@@ -70,9 +76,12 @@ public class FriendsFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 User get = (User) parent.getItemAtPosition(position);
                 Toast.makeText(getContext(), "click " + get.username, Toast.LENGTH_SHORT).show();
+
+                new AddRoomTask().execute(addURL, username, get.username, type);
+
                 Intent intent = new Intent(getActivity(), ChatActivity.class);
                 Bundle bundle = new Bundle();
-                bundle.putString("id", "1");
+                bundle.putString("id", String.valueOf(position + 1));
                 bundle.putString("roomName", get.username);
                 bundle.putString("userId", userId);
                 bundle.putString("username", username);
@@ -109,11 +118,29 @@ public class FriendsFragment extends Fragment {
         }
     }
 
+    class AddRoomTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                String status = HttpUtil.addRoom(params);
+                return status;
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+        }
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         Bundle bundle = ((MainActivity) context).toValue();
         userId = bundle.getString("userId");
+        username = bundle.getString("username");
     }
 
     @Override

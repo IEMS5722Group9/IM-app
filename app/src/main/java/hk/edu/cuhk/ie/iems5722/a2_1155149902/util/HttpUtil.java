@@ -122,21 +122,21 @@ public class HttpUtil {
         return "ERROR";
     }
 
-    public static ArrayList<Chatroom> fetchChatRoom(String url) throws IOException {
-        ArrayList<Chatroom> rList = new ArrayList<>();
-        String results = readStream(new URL(url).openStream());
-        try {
-            JSONArray data = new JSONObject(results).getJSONArray("data");
-            for (int i = 0; i < data.length(); i++) {
-                JSONObject chatroom = data.getJSONObject(i);
-                rList.add(new Chatroom(chatroom.getString("id"), chatroom.getString("name")));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        Log.d("Chatrooms", results);// 打印获取信息
-        return rList;
-    }
+//    public static ArrayList<Chatroom> fetchChatRoom(String url) throws IOException {
+//        ArrayList<Chatroom> rList = new ArrayList<>();
+//        String results = readStream(new URL(url).openStream());
+//        try {
+//            JSONArray data = new JSONObject(results).getJSONArray("data");
+//            for (int i = 0; i < data.length(); i++) {
+//                JSONObject chatroom = data.getJSONObject(i);
+//                rList.add(new Chatroom(chatroom.getString("id"), chatroom.getString("name")));
+//            }
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//        Log.d("Chatrooms", results);// 打印获取信息
+//        return rList;
+//    }
 
     public static MessageList fetchMessage(String url) throws MalformedURLException {
         MessageList dataList = new MessageList();
@@ -264,6 +264,28 @@ public class HttpUtil {
         os.flush();
         os.close();
 
+        int responseCode = conn.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            InputStream inputStream = conn.getInputStream();
+            String results = readStream(inputStream);
+            JSONObject jsonObject;
+            jsonObject = new JSONObject(String.valueOf(results));
+            conn.disconnect();
+            return jsonObject.getString("status");
+        }
+        conn.disconnect();
+        return "ERROR";
+    }
+
+    public static String addRoom(String... params) throws IOException, JSONException {
+        String urlParams = "user_name=" + params[1] + "&friend_name=" + params[2] + "&type=" + params[3];
+        HttpURLConnection conn = postConnection(params[0], urlParams);
+        OutputStream os = conn.getOutputStream();
+        os.write(urlParams.getBytes());
+        os.flush();
+        os.close();
+
+        //如果房间存在就不用再创建了，直接跳到房间
         int responseCode = conn.getResponseCode();
         if (responseCode == HttpURLConnection.HTTP_OK) {
             InputStream inputStream = conn.getInputStream();
