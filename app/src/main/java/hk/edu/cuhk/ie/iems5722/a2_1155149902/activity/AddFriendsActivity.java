@@ -208,7 +208,7 @@ public class AddFriendsActivity extends AppCompatActivity implements View.OnClic
 
 
     private void goScanner() {
-        Toast.makeText(AddFriendsActivity.this, "已打开.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(AddFriendsActivity.this, "OK", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(this, ScannerActivity.class);
         //这里可以用intent传递一些参数，比如扫码聚焦框尺寸大小，支持的扫码类型。
 //        //设置扫码框的宽

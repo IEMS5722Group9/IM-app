@@ -72,6 +72,56 @@ public class HttpUtil {
         return result;
     }
 
+    public static User getUser(String... params) throws IOException, JSONException {
+        User me = new User();
+        String urlParams = "username=" + params[1];
+        HttpURLConnection conn = postConnection(params[0], urlParams);
+        OutputStream os = conn.getOutputStream();
+        os.write(urlParams.getBytes());
+        os.flush();
+
+        int responseCode = conn.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            InputStream inputStream = conn.getInputStream();
+            String results = readStream(inputStream);
+            JSONObject jsonObject;
+            jsonObject = new JSONObject(String.valueOf(results));
+            String status = jsonObject.getString("status");
+
+            if (status.equals("OK")) {
+                JSONArray data = jsonObject.getJSONArray("data");
+                me.id = Integer.parseInt(data.getJSONObject(0).getString("id"));
+                me.username = data.getJSONObject(0).getString("username");
+                me.password = data.getJSONObject(0).getString("password");
+                conn.disconnect();
+                return me;
+            }
+        }
+        conn.disconnect();
+        return null;
+    }
+
+    public static String registerUser(String... params) throws IOException, JSONException {
+        String urlParams = "username=" + params[1] + "&password=" + params[2];
+        HttpURLConnection conn = postConnection(params[0], urlParams);
+        OutputStream os = conn.getOutputStream();
+        os.write(urlParams.getBytes());
+        os.flush();
+        os.close();
+
+        int responseCode = conn.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            InputStream inputStream = conn.getInputStream();
+            String results = readStream(inputStream);
+            JSONObject jsonObject;
+            jsonObject = new JSONObject(String.valueOf(results));
+            conn.disconnect();
+            return jsonObject.getString("status");
+        }
+        conn.disconnect();
+        return "ERROR";
+    }
+
     public static ArrayList<Chatroom> fetchChatRoom(String url) throws IOException {
         ArrayList<Chatroom> rList = new ArrayList<>();
         String results = readStream(new URL(url).openStream());
@@ -84,6 +134,7 @@ public class HttpUtil {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        Log.d("Chatrooms", results);// 打印获取信息
         return rList;
     }
 
@@ -148,6 +199,7 @@ public class HttpUtil {
         OutputStream os = conn.getOutputStream();
         os.write(urlParams.getBytes());
         os.flush();
+        os.close();
 
         int responseCode = conn.getResponseCode();
         if (responseCode == HttpURLConnection.HTTP_OK) {
@@ -156,9 +208,23 @@ public class HttpUtil {
             String results = readStream(inputStream);
             Log.d("ChatActivity", "content    " + results);
         }
-
-        os.close();
         conn.disconnect();
+    }
+
+    public static ArrayList<User> fetchFriendList(String url) throws IOException {
+        ArrayList<User> fList = new ArrayList<>();
+        String results = readStream(new URL(url).openStream());
+        try {
+            JSONArray data = new JSONObject(results).getJSONArray("data");
+            for (int i = 0; i < data.length(); i++) {
+                JSONObject friend = data.getJSONObject(i);
+                fList.add(new User(friend.getInt("friend_id"), friend.getString("friend_name")));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.d("Friends", results);// 打印获取信息
+        return fList;
     }
 
     public static User searchFriend(String... params) throws IOException, JSONException {
@@ -168,6 +234,7 @@ public class HttpUtil {
         OutputStream os = conn.getOutputStream();
         os.write(urlParams.getBytes());
         os.flush();
+        os.close();
 
         int responseCode = conn.getResponseCode();
         if (responseCode == HttpURLConnection.HTTP_OK) {
@@ -181,10 +248,10 @@ public class HttpUtil {
                 JSONArray data = jsonObject.getJSONArray("data");
                 friend.id = Integer.parseInt(data.getJSONObject(0).getString("id"));
                 friend.username = data.getJSONObject(0).getString("username");
+                conn.disconnect();
                 return friend;
             }
         }
-        os.close();
         conn.disconnect();
         return null;
     }
@@ -195,6 +262,7 @@ public class HttpUtil {
         OutputStream os = conn.getOutputStream();
         os.write(urlParams.getBytes());
         os.flush();
+        os.close();
 
         int responseCode = conn.getResponseCode();
         if (responseCode == HttpURLConnection.HTTP_OK) {
@@ -202,10 +270,11 @@ public class HttpUtil {
             String results = readStream(inputStream);
             JSONObject jsonObject;
             jsonObject = new JSONObject(String.valueOf(results));
+            conn.disconnect();
             return jsonObject.getString("status");
-        } else {
-            return "ERROR";
         }
+        conn.disconnect();
+        return "ERROR";
     }
 
     public static String convertDate(String target) throws ParseException {

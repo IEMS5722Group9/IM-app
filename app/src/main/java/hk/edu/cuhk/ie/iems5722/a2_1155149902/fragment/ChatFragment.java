@@ -61,6 +61,7 @@ public class ChatFragment extends Fragment {
                 bundle.putString("roomName", tv.getText().toString());
                 bundle.putString("userId", userId);
                 bundle.putString("username", username);
+                bundle.putString("exit", "yes");
                 intent.putExtras(bundle);
                 startActivity(intent);
             }
