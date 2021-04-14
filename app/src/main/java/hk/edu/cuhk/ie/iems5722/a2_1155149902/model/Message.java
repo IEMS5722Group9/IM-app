@@ -17,6 +17,8 @@ public class Message {
         this.message_time = message_time;
     }
 
+    public Message() {
+    }
 
     public String getMessage() {
         return message;

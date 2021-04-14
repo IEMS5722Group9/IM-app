@@ -290,10 +290,16 @@ public class HttpUtil {
         if (responseCode == HttpURLConnection.HTTP_OK) {
             InputStream inputStream = conn.getInputStream();
             String results = readStream(inputStream);
+            conn.disconnect();
             JSONObject jsonObject;
             jsonObject = new JSONObject(String.valueOf(results));
-            conn.disconnect();
-            return jsonObject.getString("status");
+            String status = jsonObject.getString("status");
+
+            if (status.equals("OK")) {
+                Log.d("AddRoom", results);
+                JSONArray data = jsonObject.getJSONArray("data");
+                return String.valueOf(data.getJSONObject(0).getInt("id"));
+            }
         }
         conn.disconnect();
         return "ERROR";
