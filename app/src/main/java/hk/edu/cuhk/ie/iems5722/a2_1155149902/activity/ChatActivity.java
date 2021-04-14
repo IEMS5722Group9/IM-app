@@ -54,6 +54,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private String postURL = baseUrl + "/api/a3/send_message";
     private String roomId;
     private String roomName;
+    private String roomType;
     private String userId;
     private String username;
 
@@ -87,6 +88,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         Bundle bundle = intent.getExtras();
         roomId = bundle.getString("id");
         roomName = bundle.getString("roomName");
+        roomType = bundle.getString("roomType");
         userId = bundle.getString("userId");
         username = bundle.getString("username");
 
@@ -99,10 +101,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             mSocket.on(Socket.EVENT_CONNECT, onConnectSuccess);
             mSocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
 
-            mSocket.on("join", onJoin);
-            mSocket.on("leave", onLeave);
             mSocket.on("message", onMessage);
-
+            if(roomType.equals("group")){
+                mSocket.on("join", onJoin);
+                mSocket.on("leave", onLeave);
+            }
             mSocket.connect();
             mSocket.emit("join", username, roomId);
 

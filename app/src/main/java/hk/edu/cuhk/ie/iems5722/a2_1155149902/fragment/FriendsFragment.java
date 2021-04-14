@@ -42,7 +42,7 @@ public class FriendsFragment extends Fragment {
     private String URL = baseUrl + "/api/a3/get_friends?user_id=";
     private String addURL = baseUrl + "/api/a3/add_chatroom?";
     private String type = "person";
-    private boolean alreadyAdd = false;
+//    private String roomId = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,18 +75,18 @@ public class FriendsFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 User get = (User) parent.getItemAtPosition(position);
-                Toast.makeText(getContext(), "click " + get.username, Toast.LENGTH_SHORT).show();
-
                 new AddRoomTask().execute(addURL, username, get.username, type);
-
-                Intent intent = new Intent(getActivity(), ChatActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("id", String.valueOf(position + 1));
-                bundle.putString("roomName", get.username);
-                bundle.putString("userId", userId);
-                bundle.putString("username", username);
-                intent.putExtras(bundle);
-                startActivity(intent);
+//                if (roomId == null) {
+//                } else {
+//                    Intent intent = new Intent(getActivity(), ChatActivity.class);
+//                    Bundle bundle = new Bundle();
+//                    bundle.putString("id", roomId);
+//                    bundle.putString("roomName", get.username);
+//                    bundle.putString("userId", userId);
+//                    bundle.putString("username", username);
+//                    intent.putExtras(bundle);
+//                    startActivity(intent);
+//                }
             }
         });
         return root;
@@ -119,11 +119,13 @@ public class FriendsFragment extends Fragment {
     }
 
     class AddRoomTask extends AsyncTask<String, Void, String> {
+        String room_name;
+
         @Override
         protected String doInBackground(String... params) {
+            room_name = params[2];
             try {
-                String status = HttpUtil.addRoom(params);
-                return status;
+                return HttpUtil.addRoom(params);
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
@@ -132,6 +134,21 @@ public class FriendsFragment extends Fragment {
 
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
+            if (result.equals("ERROR") || result == null) {
+//                roomId = null;
+                Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
+            } else {
+//                roomId = result;
+                Intent intent = new Intent(getActivity(), ChatActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("id", result);
+                bundle.putString("roomName", room_name);
+                bundle.putString("roomType", type);
+                bundle.putString("userId", userId);
+                bundle.putString("username", username);
+                intent.putExtras(bundle);
+                startActivity(intent);
+            }
         }
     }
 

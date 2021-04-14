@@ -32,6 +32,7 @@ import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.Chatroom;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.activity.MainActivity;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.adapter.RoomAdapter;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.User;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.HttpUtil;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.UrlUtil;
 
@@ -55,14 +56,16 @@ public class ChatFragment extends Fragment {
         roomListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                TextView tv = (TextView) view.findViewById(R.id.room_name);
+                Chatroom get = (Chatroom) parent.getItemAtPosition(position);
+//                TextView tv = (TextView) view.findViewById(R.id.room_name);
                 Intent intent = new Intent(getActivity(), ChatActivity.class);
                 Bundle bundle = new Bundle();
-                bundle.putString("id", roomId);
-                bundle.putString("roomName", tv.getText().toString());
+                bundle.putString("id", get.room_id);
+                bundle.putString("roomName", get.room_name);
+                bundle.putString("roomType", get.room_type);
                 bundle.putString("userId", userId);
                 bundle.putString("username", username);
-                bundle.putString("exit", "yes");
+//                bundle.putString("exit", "yes");
                 intent.putExtras(bundle);
                 startActivity(intent);
             }
@@ -99,7 +102,7 @@ public class ChatFragment extends Fragment {
         @Override
         protected void onPostExecute(ArrayList<Chatroom> chatroom) {
             super.onPostExecute(chatroom);
-            RoomAdapter adapter = new RoomAdapter(getActivity(), chatroom);
+            RoomAdapter adapter = new RoomAdapter(getActivity(), chatroom, username);
             roomListView.setAdapter(adapter);
         }
     }
@@ -107,24 +110,38 @@ public class ChatFragment extends Fragment {
     public ArrayList<Chatroom> fetchChatRoom(String url) throws IOException {
         ArrayList<Chatroom> rList = new ArrayList<>();
         String results = HttpUtil.readStream(new URL(url).openStream());
+        Log.d("GetChatroom", results);
         try {
             JSONArray data = new JSONObject(results).getJSONArray("data");
             for (int i = 0; i < data.length(); i++) {
                 JSONObject chatroom = data.getJSONObject(i);
                 //分割私聊聊天室名字
-                roomId = chatroom.getString("id");
-                String name = chatroom.getString("name");
-                String type = chatroom.getString("type");
-                if(type.equals("person")){
+                roomId = chatroom.getString("room_id");
+                String name = chatroom.getString("room_name");
+                String type = chatroom.getString("room_type");
+                String message_user = chatroom.getString("username");
+                String message = chatroom.getString("message");
+                String messag_time = chatroom.getString("message_time");
+                if (type.equals("person")) {
                     String[] chatroom_name = name.split("&");
-                    for (int j = 0; j < 2; j++) {
-                        if(chatroom_name[j].equals(username)){
-                            continue;
-                        }
-                        name = chatroom_name[j];
+                    if (!chatroom_name[0].equals(username) && !chatroom_name[1].equals(username)) {
+                        continue;
+                    } else {
+                        name = chatroom_name[0].equals(username) ? chatroom_name[1] : chatroom_name[0];
                     }
+//                    for (int j = 0; j < 2; j++) {
+//                        if (!chatroom_name[j].equals(username)) {
+//                            continue;
+//                        }
+//                        name = chatroom_name[j];
+//                    }
                 }
-                rList.add(new Chatroom(roomId, name));
+                Chatroom room = new Chatroom(roomId, name);
+                room.setType(type);
+                if (messag_time != null) {
+                    room.setMessage(message_user, message, messag_time);
+                }
+                rList.add(room);
                 //rList.add(new Chatroom(chatroom.getString("id"), chatroom.getString("name")));
             }
         } catch (JSONException e) {

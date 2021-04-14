@@ -10,8 +10,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:hint="用户名"
-        android:textSize="18sp"
-        android:textColor="@color/black"/>
+        android:textColor="@color/black"
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/friend_id"
@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/friend_name"
         android:layout_alignLeft="@id/friend_name"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:hint="用户ID"
         android:textSize="14sp" />
 

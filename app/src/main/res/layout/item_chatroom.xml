@@ -1,28 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingLeft="40dp"
-    android:paddingRight="40dp">
+    android:padding="10dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"
-        android:background="@drawable/shape_corner"
-        android:orientation="vertical">
+    <TextView
+        android:id="@+id/room_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Chatroom"
+        android:textColor="@color/black"
+        android:textSize="18sp" />
 
-        <TextView
-            android:id="@+id/room_name"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="Chatroom"
-            android:textColor="@color/white"
-            android:textSize="20dp" />
-    </LinearLayout>
+    <TextView
+        android:id="@+id/new_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/room_name"
+        android:layout_alignLeft="@id/room_name"
+        android:layout_marginTop="5dp"
+        android:hint="用户名: 消息内容"
+        android:textSize="14sp" />
 
-
-</LinearLayout>
+    <TextView
+        android:id="@+id/new_message_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/room_name"
+        android:layout_alignParentRight="true"
+        android:gravity="end"
+        android:hint="消息时间"
+        android:textSize="14sp" />
+</RelativeLayout>
