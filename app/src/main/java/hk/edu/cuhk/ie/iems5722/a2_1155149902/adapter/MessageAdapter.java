@@ -25,12 +25,14 @@ public class MessageAdapter extends ArrayAdapter<Message> {
     public Context mContext;
     public LayoutInflater layoutInflater;
     public String userId;
+    private String roomType;
 
-    public MessageAdapter(Context context, ArrayList<Message> list, String userId) {
+    public MessageAdapter(Context context, ArrayList<Message> list, String userId, String roomType) {
         super(context, 0, list);
         this.mContext = context;
         this.mList = list;
         this.userId = userId;
+        this.roomType = roomType;
         layoutInflater = LayoutInflater.from(context);
     }
 
@@ -46,16 +48,18 @@ public class MessageAdapter extends ArrayAdapter<Message> {
         Message m = getItem(i);
 
         if (m.getUserId().equals(this.userId)) {
-            //layoutInflater.inflate
-            //使用这个布局里面的控件
             holder = new ViewHolder();
             convertView = layoutInflater.inflate(R.layout.item_message_send, viewGroup, false);
             holder.name = (TextView) convertView.findViewById(R.id.user_name);
             holder.content = (TextView) convertView.findViewById(R.id.message_content);
             holder.time = (TextView) convertView.findViewById(R.id.message_time);
-            //获取List集合里new好的控件和得到里面的数据
-            // 需要写在if null外面， 否则scroll无法更新
-            holder.name.setText(String.format("User: %s", m.getName()));
+
+            if (!roomType.equals("person")) {
+                holder.name.setText(String.format("User: %s", m.getName()));
+            }
+            else {
+                holder.name.setVisibility(View.GONE);
+            }
             holder.content.setText(m.getMessage());
             try {
                 holder.time.setText(HttpUtil.convertDate(m.getTime()));
@@ -68,9 +72,14 @@ public class MessageAdapter extends ArrayAdapter<Message> {
             holder.name = (TextView) convertView.findViewById(R.id.r_user_name);
             holder.content = (TextView) convertView.findViewById(R.id.r_message_content);
             holder.time = (TextView) convertView.findViewById(R.id.r_message_time);
-            //获取List集合里new好的控件和得到里面的数据
-            // 需要写在if null外面， 否则scroll无法更新
-            holder.name.setText(String.format("User: %s", m.getName()));
+
+            if (!roomType.equals("person")) {
+                holder.name.setText(String.format("User: %s", m.getName()));
+            }
+            else {
+                holder.name.setVisibility(View.GONE);
+            }
+
             holder.content.setText(m.getMessage());
             try {
                 holder.time.setText(HttpUtil.convertDate(m.getTime()));

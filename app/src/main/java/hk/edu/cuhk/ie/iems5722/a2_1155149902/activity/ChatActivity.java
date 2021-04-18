@@ -185,7 +185,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             page = Integer.parseInt(newList.current_page);
             total_page = Integer.parseInt(newList.total_pages);
             mlist.addAll(0, newList.messages);
-            MessageAdapter adapter = new MessageAdapter(ChatActivity.this, mlist, userId);
+            MessageAdapter adapter = new MessageAdapter(ChatActivity.this, mlist, userId, roomType);
             mlistview.setAdapter(adapter);
             mlistview.setSelection(newList.messages.size());
             Toast.makeText(ChatActivity.this, "Load Success", Toast.LENGTH_SHORT).show();

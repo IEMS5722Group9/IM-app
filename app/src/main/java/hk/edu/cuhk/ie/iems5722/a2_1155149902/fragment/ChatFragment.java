@@ -102,8 +102,10 @@ public class ChatFragment extends Fragment {
         @Override
         protected void onPostExecute(ArrayList<Chatroom> chatroom) {
             super.onPostExecute(chatroom);
-            RoomAdapter adapter = new RoomAdapter(getActivity(), chatroom, username);
-            roomListView.setAdapter(adapter);
+            if (getActivity()!=null) {
+                RoomAdapter adapter = new RoomAdapter(getActivity(), chatroom, username);
+                roomListView.setAdapter(adapter);
+            }
         }
     }
 
@@ -129,12 +131,6 @@ public class ChatFragment extends Fragment {
                     } else {
                         name = chatroom_name[0].equals(username) ? chatroom_name[1] : chatroom_name[0];
                     }
-//                    for (int j = 0; j < 2; j++) {
-//                        if (!chatroom_name[j].equals(username)) {
-//                            continue;
-//                        }
-//                        name = chatroom_name[j];
-//                    }
                 }
                 Chatroom room = new Chatroom(roomId, name);
                 room.setType(type);

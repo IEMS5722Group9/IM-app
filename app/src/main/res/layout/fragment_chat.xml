@@ -7,10 +7,18 @@
     android:orientation="vertical"
     tools:context=".fragment.ChatFragment">
 
-    <ListView
-        android:id="@+id/chatroom_listView"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:transcriptMode="alwaysScroll" />
+        android:layout_marginLeft="20px"
+        android:layout_marginRight="20px">
+
+        <ListView
+            android:id="@+id/chatroom_listView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:transcriptMode="alwaysScroll">
+        </ListView>
+    </LinearLayout>
 
 </RelativeLayout>

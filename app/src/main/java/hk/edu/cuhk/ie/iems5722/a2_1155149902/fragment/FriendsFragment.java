@@ -76,17 +76,6 @@ public class FriendsFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 User get = (User) parent.getItemAtPosition(position);
                 new AddRoomTask().execute(addURL, username, get.username, type);
-//                if (roomId == null) {
-//                } else {
-//                    Intent intent = new Intent(getActivity(), ChatActivity.class);
-//                    Bundle bundle = new Bundle();
-//                    bundle.putString("id", roomId);
-//                    bundle.putString("roomName", get.username);
-//                    bundle.putString("userId", userId);
-//                    bundle.putString("username", username);
-//                    intent.putExtras(bundle);
-//                    startActivity(intent);
-//                }
             }
         });
         return root;
@@ -113,8 +102,10 @@ public class FriendsFragment extends Fragment {
         @Override
         protected void onPostExecute(ArrayList<User> friend) {
             super.onPostExecute(friend);
-            FriendAdapter adapter = new FriendAdapter(getActivity(), friend);
-            friendListView.setAdapter(adapter);
+            if (getActivity()!=null) {
+                FriendAdapter adapter = new FriendAdapter(getActivity(), friend);
+                friendListView.setAdapter(adapter);
+            }
         }
     }
 

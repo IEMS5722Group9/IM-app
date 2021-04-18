@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -26,8 +27,11 @@ import hk.edu.cuhk.ie.iems5722.a2_1155149902.activity.MainActivity;
 
 public class MeFragment extends Fragment implements View.OnClickListener {
     private String userId;
+    private String username;
     private Button btn_QR;
     private ImageView iv_qrcode;
+    private TextView tv_name;
+    private TextView tv_id;
 
     private String content;//二维码内容
     private int width, height;//宽度，高度
@@ -48,6 +52,11 @@ public class MeFragment extends Fragment implements View.OnClickListener {
                              ViewGroup container, Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.fragment_me, container, false);
+        tv_name = (TextView) root.findViewById(R.id.username);
+        tv_id = (TextView) root.findViewById(R.id.userId);
+        tv_name.setText(username);
+        tv_id.setText("ID: " + userId);
+
         btn_QR = (Button) root.findViewById(R.id.QR_button);
         btn_QR.setOnClickListener(this);
         iv_qrcode = (ImageView) root.findViewById(R.id.iv_qrcode);
@@ -71,6 +80,7 @@ public class MeFragment extends Fragment implements View.OnClickListener {
         super.onAttach(context);
         Bundle bundle = ((MainActivity) context).toValue();
         userId = bundle.getString("userId");
+        username = bundle.getString("username");
     }
 
     /**

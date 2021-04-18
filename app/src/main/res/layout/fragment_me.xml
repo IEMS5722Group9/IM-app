@@ -7,6 +7,23 @@
     tools:context=".fragment.MeFragment"
     android:orientation="vertical">
 
+    <TextView
+        android:id="@+id/username"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="20dp"
+        android:text="User Name"
+        android:textSize="30dp"
+        android:textColor="@color/black"
+        android:gravity="center"/>
+    <TextView
+        android:id="@+id/userId"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:textSize="20dp"
+        android:text="User ID"
+        android:gravity="center"/>
+
     <Button
         android:id="@+id/QR_button"
         android:layout_gravity="center"
