@@ -54,12 +54,7 @@ public class MessageAdapter extends ArrayAdapter<Message> {
             holder.content = (TextView) convertView.findViewById(R.id.message_content);
             holder.time = (TextView) convertView.findViewById(R.id.message_time);
 
-            if (!roomType.equals("person")) {
-                holder.name.setText(String.format("User: %s", m.getName()));
-            }
-            else {
-                holder.name.setVisibility(View.GONE);
-            }
+            holder.name.setVisibility(View.GONE);
             holder.content.setText(m.getMessage());
             try {
                 holder.time.setText(HttpUtil.convertDate(m.getTime()));
@@ -74,9 +69,8 @@ public class MessageAdapter extends ArrayAdapter<Message> {
             holder.time = (TextView) convertView.findViewById(R.id.r_message_time);
 
             if (!roomType.equals("person")) {
-                holder.name.setText(String.format("User: %s", m.getName()));
-            }
-            else {
+                holder.name.setText(String.format("%s", m.getName()));
+            } else {
                 holder.name.setVisibility(View.GONE);
             }
 

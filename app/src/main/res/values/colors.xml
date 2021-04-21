@@ -5,9 +5,12 @@
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
+    <color name="black">#FF2c2c2c</color>
     <color name="white">#FFFFFFFF</color>
     <color name="seagreen">#2E8B57</color><!--海绿色 -->
     <color name="aqua">#00FFFF</color><!--浅绿色 -->
+    <color name="whitesmoke">#F5F5F5</color><!--很浅灰色 -->
+    <color name="dogerblue">#1E90FF</color><!--道奇蓝 -->
+    <color name="sliver">#C0C0C0</color><!--银灰色 -->
 
 </resources>
