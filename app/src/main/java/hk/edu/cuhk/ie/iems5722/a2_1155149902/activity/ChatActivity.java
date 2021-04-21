@@ -210,6 +210,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
+            Intent intent = new Intent();
+            intent.setAction("action.refreshRoom");
+            sendBroadcast(intent);
         }
 
     }

@@ -102,7 +102,7 @@ public class FriendsFragment extends Fragment {
         @Override
         protected void onPostExecute(ArrayList<User> friend) {
             super.onPostExecute(friend);
-            if (getActivity()!=null) {
+            if (getActivity() != null) {
                 FriendAdapter adapter = new FriendAdapter(getActivity(), friend);
                 friendListView.setAdapter(adapter);
             }
@@ -125,7 +125,7 @@ public class FriendsFragment extends Fragment {
 
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            if (result.equals("ERROR") || result == null) {
+            if (result == null||result.equals("ERROR")) {
 //                roomId = null;
                 Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
             } else {
