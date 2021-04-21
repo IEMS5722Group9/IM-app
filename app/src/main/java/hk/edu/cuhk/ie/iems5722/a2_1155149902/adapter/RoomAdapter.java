@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.text.ParseException;
@@ -46,27 +47,25 @@ public class RoomAdapter extends ArrayAdapter<Chatroom> {
             holder.name = (TextView) convertView.findViewById(R.id.room_name);
             holder.time = (TextView) convertView.findViewById(R.id.new_message_time);
             holder.message = (TextView) convertView.findViewById(R.id.new_message);
+            holder.image = (ImageView) convertView.findViewById(R.id.room_image);
             convertView.setTag(holder);
 
         } else {
             holder = (RoomAdapter.ViewHolder) convertView.getTag();
         }
-
+        if (room.room_type.equals("group")) {
+            holder.image.setImageResource(R.drawable.group_image);
+        }
         holder.name.setText(room.room_name);
         try {
             holder.time.setText(HttpUtil.convertDate(room.newest_message.getTime()));
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        if (room.newest_message.getTime() == null) {
-            holder.message.setText("");
-            holder.time.setText("");
-        } else {
-            if (room.newest_message.getName().equals(this.username))
-                holder.message.setText(room.newest_message.getMessage());
-            else {
-                holder.message.setText(room.newest_message.getName() + ": " + room.newest_message.getMessage());
-            }
+        if (room.newest_message.getName().equals(this.username))
+            holder.message.setText(room.newest_message.getMessage());
+        else {
+            holder.message.setText(room.newest_message.getName() + ": " + room.newest_message.getMessage());
         }
 
         return convertView;
@@ -76,5 +75,6 @@ public class RoomAdapter extends ArrayAdapter<Chatroom> {
         TextView name;
         TextView message;
         TextView time;
+        ImageView image;
     }
 }

@@ -1,26 +1,38 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="10dp"
-    tools:context=".fragment.FriendsFragment">
+    android:padding="10dp">
 
-    <TextView
-        android:id="@+id/friend_name"
-        android:layout_width="wrap_content"
+    <ImageView
+        android:id="@+id/friend_image"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        tools:src="@tools:sample/avatars" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="用户名"
-        android:textColor="@color/black"
-        android:textSize="18sp" />
+        android:layout_marginLeft="10dp">
 
-    <TextView
-        android:id="@+id/friend_id"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/friend_name"
-        android:layout_alignLeft="@id/friend_name"
-        android:layout_marginTop="5dp"
-        android:hint="用户ID"
-        android:textSize="14sp" />
+        <TextView
+            android:id="@+id/friend_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="用户名"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/friend_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/friend_name"
+            android:layout_alignLeft="@id/friend_name"
+            android:layout_marginTop="5dp"
+            android:hint="用户ID"
+            android:textSize="14sp" />
+
+    </RelativeLayout>
+</LinearLayout>

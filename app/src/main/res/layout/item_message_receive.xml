@@ -1,47 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingLeft="15dp">
+    android:layout_gravity="left"
+    android:paddingTop="10dp">
+
+    <ImageView
+        android:id="@+id/r_user_avatar"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        tools:srcCompat="@tools:sample/avatars" />
 
     <LinearLayout
-        android:layout_width="200dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/shape_corner_receive"
+        android:layout_marginLeft="5dp"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/r_user_name"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="5dp"
-            android:paddingTop="5dp"
+            android:layout_marginBottom="2dp"
             android:text="用户"
-            android:textColor="@color/white"
-            android:textSize="18dp" />
+            android:textColor="#C0C0C0"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/r_message_content"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:minHeight="50dp"
-            android:paddingLeft="5dp"
+            android:background="@drawable/shape_corner_receive"
+            android:gravity="left"
+            android:maxWidth="200dp"
             android:text="内容"
-            android:textColor="@color/white"
-            android:textSize="18dp" />
+            android:textColor="@color/black"
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/r_message_time"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="right"
-            android:paddingRight="5dp"
+            android:layout_alignParentLeft="true"
+            android:layout_marginTop="2dp"
             android:text="时间"
-            android:textColor="@color/white"
-            android:textSize="16dp" />
+            android:textColor="#C0C0C0"
+            android:textSize="14sp" />
     </LinearLayout>
 
 </LinearLayout>

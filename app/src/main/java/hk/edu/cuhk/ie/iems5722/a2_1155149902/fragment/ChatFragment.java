@@ -1,7 +1,9 @@
 package hk.edu.cuhk.ie.iems5722.a2_1155149902.fragment;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +15,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import org.json.JSONArray;
@@ -44,6 +47,27 @@ public class ChatFragment extends Fragment {
     private String username;
     private String baseUrl = UrlUtil.BaseUrl;
     private String URL = baseUrl + "/api/a3/get_chatrooms";
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("action.refreshRoom");
+        requireActivity().registerReceiver(mRefreshBroadcastReceiver, intentFilter);
+    }
+
+    // broadcast receiver
+    private BroadcastReceiver mRefreshBroadcastReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals("action.refreshRoom")) {
+                new NewAsyncTask().execute(URL);
+            }
+        }
+    };
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -102,7 +126,7 @@ public class ChatFragment extends Fragment {
         @Override
         protected void onPostExecute(ArrayList<Chatroom> chatroom) {
             super.onPostExecute(chatroom);
-            if (getActivity()!=null) {
+            if (getActivity() != null) {
                 RoomAdapter adapter = new RoomAdapter(getActivity(), chatroom, username);
                 roomListView.setAdapter(adapter);
             }

@@ -16,7 +16,8 @@
         android:theme="@style/Theme.HelloWord">
         <activity
             android:name=".activity.MainActivity"
-            android:label="@string/title_activity_main2"></activity>
+            android:label="@string/title_activity_main2"
+            android:theme="@style/Theme.HelloWord" />
         <activity
             android:name=".activity.LoginActivity"
             android:label="@string/app_name"
@@ -26,10 +27,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.HelloWord.NoActionBar" />
         <activity
             android:name=".activity.SignupActivity"
             android:label="@string/app_name"
@@ -41,7 +38,7 @@
             android:theme="@style/Theme.HelloWord.NoActionBar"  />
         <activity
             android:name=".activity.AddFriendsActivity"
-            android:label="Add friends"></activity>
+            android:label="Add friends" />
     </application>
 
 </manifest>
