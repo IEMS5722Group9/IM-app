@@ -1,10 +1,12 @@
 package hk.edu.cuhk.ie.iems5722.a2_1155149902.activity;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -105,12 +107,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             mSocket.on(Socket.EVENT_CONNECT, onConnectSuccess);
             mSocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
             mSocket.on("message", onMessage);
-//            if(roomType.equals("group")){
-//                mSocket.on("join", onJoin);
-//                mSocket.on("leave", onLeave);
-//            }
+            if (roomType.equals("group")) {
+                mSocket.on("join", onJoin);
+                mSocket.on("leave", onLeave);
+            }
             mSocket.connect();
-//            mSocket.emit("join", username, roomId);
+            mSocket.emit("join", username, roomId);
 
         } catch (URISyntaxException e) {
             e.printStackTrace();
@@ -138,6 +140,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 //点击刷新按钮回到第一页
                 mlist = new ArrayList<>();
                 new MyGetTask().execute(getURL + 1);
+                break;
             case R.id.send_button:
                 //判断文本框是否为空
                 if (!TextUtils.isEmpty(editText.getText())) {
@@ -153,6 +156,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 } else {
                     Toast.makeText(this, "Input something", Toast.LENGTH_SHORT).show();
                 }
+                break;
         }
     }
 
@@ -160,7 +164,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onOptionsItemSelected(MenuItem item) {
         //Toolbar的事件---返回
         if (item.getItemId() == android.R.id.home) {
-            mSocket.emit("leave", username, roomId);
+//            mSocket.emit("leave", username, roomId);
             finish();
         }
         return super.onOptionsItemSelected(item);
@@ -185,6 +189,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         protected void onPostExecute(MessageList newList) {
             super.onPostExecute(newList);
+            Intent intent = new Intent();
+            intent.setAction("action.refreshRoom");
+            sendBroadcast(intent);
             page = Integer.parseInt(newList.current_page);
             total_page = Integer.parseInt(newList.total_pages);
             mlist.addAll(0, newList.messages);
@@ -192,9 +199,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             mlistview.setAdapter(adapter);
             mlistview.setSelection(newList.messages.size());
             Toast.makeText(ChatActivity.this, "Load Success", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent();
-            intent.setAction("action.refreshRoom");
-            sendBroadcast(intent);
         }
     }
 
@@ -212,6 +216,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
+            mlist = new ArrayList<>();
+            new MyGetTask().execute(getURL + 1);
             Intent intent = new Intent();
             intent.setAction("action.refreshRoom");
             sendBroadcast(intent);
@@ -243,24 +249,62 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void sendNotification(String content, String title) {
         Intent intent = new Intent();
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
-        NotificationManager notifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        Notification notification = new NotificationCompat.Builder(this)
-                .setAutoCancel(true)
-                // 设置该通知优先级
-                .setPriority(Notification.PRIORITY_MAX)
-                .setSmallIcon(R.drawable.cuhk)
-                .setContentTitle(title)
-                .setContentText(content)
-                .setVisibility(VISIBILITY_PUBLIC)
-                .setWhen(System.currentTimeMillis())
-                // 向通知添加声音、闪灯和振动效果
-                .setDefaults(Notification.DEFAULT_VIBRATE | Notification.DEFAULT_ALL | Notification.DEFAULT_SOUND)
-                .setContentIntent(pendingIntent)
-                .build();
-        notifyManager.notify(1, notification);//id要保证唯一
+        Notification notification = null;
+        PendingIntent pi = PendingIntent.getActivity(this, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        //版本兼容
+        if (Build.VERSION.SDK_INT < 26) {
+            notification = new Notification.Builder(this)
+                    .setAutoCancel(true)
+                    // 设置该通知优先级
+                    .setPriority(Notification.PRIORITY_MAX)
+                    .setSmallIcon(R.drawable.cuhk)
+                    .setContentTitle(title)
+                    .setContentText(content)
+                    .setWhen(System.currentTimeMillis())
+                    // 向通知添加声音、闪灯和振动效果
+                    .setDefaults(Notification.DEFAULT_ALL)
+                    .setContentIntent(pi)
+                    .build();
+        } else {
+            String CHANNEL_ID = "my_channel_01";
+            CharSequence name = "my_channel";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+            notificationManager.createNotificationChannel(mChannel);
+            notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setAutoCancel(true)
+                    .setSmallIcon(R.drawable.cuhk)
+                    .setContentTitle(title)
+                    .setWhen(System.currentTimeMillis())
+                    .setContentText(content)
+                    .setDefaults(Notification.DEFAULT_ALL)
+                    .build();
+        }
+        notificationManager.notify(1, notification);//id要保证唯一
+
+
+//        Intent intent = new Intent();
+//        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+//        NotificationManager notifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//        Notification notification = new NotificationCompat.Builder(this)
+//                .setAutoCancel(true)
+//                // 设置该通知优先级
+//                .setPriority(Notification.PRIORITY_MAX)
+//                .setSmallIcon(R.drawable.cuhk)
+//                .setContentTitle(title)
+//                .setContentText(content)
+//                .setVisibility(VISIBILITY_PUBLIC)
+//                .setWhen(System.currentTimeMillis())
+//                // 向通知添加声音、闪灯和振动效果
+//                .setDefaults(Notification.DEFAULT_VIBRATE | Notification.DEFAULT_ALL | Notification.DEFAULT_SOUND)
+//                .setContentIntent(pendingIntent)
+//                .build();
+//        notifyManager.notify(1, notification);//id要保证唯一
     }
 
     private Emitter.Listener onConnectSuccess = new Emitter.Listener() {
@@ -288,36 +332,36 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         }
     };
 
-//    private Emitter.Listener onJoin = new Emitter.Listener() {
-//        //发送
-//        @Override
-//        public void call(Object... args) {
-//
-//            runOnUiThread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    JSONObject data = (JSONObject) args[0];
-//                    Log.e(TAG, String.valueOf(data));
-//                    String str = data.optString("data");
-//
-//                    Log.e(TAG, "加入房间");
-//                    Toast.makeText(ChatActivity.this, str, Toast.LENGTH_LONG).show();
-//                }
-//            });
-//        }
-//    };
+    private Emitter.Listener onJoin = new Emitter.Listener() {
+        //发送
+        @Override
+        public void call(Object... args) {
 
-//    private Emitter.Listener onLeave = new Emitter.Listener() {
-//        //发送
-//        @Override
-//        public void call(Object... args) {
-//            JSONObject data = (JSONObject) args[0];
-//            Log.e(TAG, String.valueOf(data));
-//            String str = data.optString("data");
-//            Log.e(TAG, "离开房间");
-//            Toast.makeText(ChatActivity.this, str, Toast.LENGTH_LONG).show();
-//        }
-//    };
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject data = (JSONObject) args[0];
+//                    Log.e(TAG, String.valueOf(data));
+                    String str = data.optString("data");
+
+                    Log.e(TAG, "加入房间");
+                    Toast.makeText(ChatActivity.this, str, Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+    };
+
+    private Emitter.Listener onLeave = new Emitter.Listener() {
+        //发送
+        @Override
+        public void call(Object... args) {
+            JSONObject data = (JSONObject) args[0];
+            Log.e(TAG, String.valueOf(data));
+            String str = data.optString("data");
+            Log.e(TAG, "离开房间");
+            Toast.makeText(ChatActivity.this, str, Toast.LENGTH_LONG).show();
+        }
+    };
 
     private Emitter.Listener onMessage = new Emitter.Listener() {
         //发送
