@@ -136,7 +136,6 @@ public class ChatFragment extends Fragment {
     public ArrayList<Chatroom> fetchChatRoom(String url) throws IOException {
         ArrayList<Chatroom> rList = new ArrayList<>();
         String results = HttpUtil.readStream(new URL(url).openStream());
-        Log.d("GetChatroom", results);
         try {
             JSONArray data = new JSONObject(results).getJSONArray("data");
             for (int i = 0; i < data.length(); i++) {

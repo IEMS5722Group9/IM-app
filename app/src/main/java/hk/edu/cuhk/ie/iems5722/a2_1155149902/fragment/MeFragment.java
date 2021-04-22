@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.ImageUtil;
@@ -30,6 +31,7 @@ public class MeFragment extends Fragment implements View.OnClickListener {
     private String username;
     private Button btn_QR;
     private ImageView iv_qrcode;
+    private ImageView iv_me;
     private TextView tv_name;
     private TextView tv_id;
 
@@ -56,9 +58,8 @@ public class MeFragment extends Fragment implements View.OnClickListener {
         tv_id = (TextView) root.findViewById(R.id.userId);
         tv_name.setText(username);
         tv_id.setText("ID: " + userId);
-
-        btn_QR = (Button) root.findViewById(R.id.QR_button);
-        btn_QR.setOnClickListener(this);
+//        btn_QR = (Button) root.findViewById(R.id.QR_button);
+//        btn_QR.setOnClickListener(this);
         iv_qrcode = (ImageView) root.findViewById(R.id.iv_qrcode);
         iv_qrcode.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -67,6 +68,9 @@ public class MeFragment extends Fragment implements View.OnClickListener {
                 return true;
             }
         });
+        generateQrcodeAndDisplay();
+        iv_me=(ImageView) root.findViewById(R.id.me_image);
+        iv_me.bringToFront();
         return root;
     }
 

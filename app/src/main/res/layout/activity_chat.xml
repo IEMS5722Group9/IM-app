@@ -61,7 +61,7 @@
             android:id="@+id/send_button"
             android:layout_width="50dp"
             android:layout_height="match_parent"
-            android:background="@drawable/send_bg"
+            android:background="@drawable/bg_send"
             android:gravity="center"
             app:srcCompat="@android:drawable/ic_menu_send" />
     </LinearLayout>
