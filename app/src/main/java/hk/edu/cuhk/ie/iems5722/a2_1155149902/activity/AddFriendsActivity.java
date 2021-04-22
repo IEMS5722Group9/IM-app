@@ -84,11 +84,11 @@ public class AddFriendsActivity extends AppCompatActivity implements View.OnClic
                 //判断文本框是否为空
                 if (!TextUtils.isEmpty(editText.getText())) {
                     String friend_id = editText.getText().toString();
-                    if (userId.equals(friend_id)) {
-                        Toast.makeText(AddFriendsActivity.this, "Cannot add yourself!", Toast.LENGTH_SHORT).show();
-                    } else {
-                        new MySearchTask().execute(searchURL, userId, friend_id);
-                    }
+//                    if (userId.equals(friend_id)) {
+//                        Toast.makeText(AddFriendsActivity.this, "Cannot add yourself!", Toast.LENGTH_SHORT).show();
+//                    } else {
+                    new MySearchTask().execute(searchURL, userId, friend_id);
+//                    }
                     //清空文本框
                     editText.setText("");
                 }
@@ -127,7 +127,11 @@ public class AddFriendsActivity extends AppCompatActivity implements View.OnClic
                 btn_add.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        new MyAddTask().execute(addURL, userId, friend_id, friend_name);
+                        if (userId.equals(friend_id)) {
+                            Toast.makeText(AddFriendsActivity.this, "Cannot add yourself!", Toast.LENGTH_SHORT).show();
+                        } else {
+                            new MyAddTask().execute(addURL, userId, friend_id, friend_name);
+                        }
                     }
                 });
             }
@@ -189,7 +193,7 @@ public class AddFriendsActivity extends AppCompatActivity implements View.OnClic
                 ActivityCompat.requestPermissions(AddFriendsActivity.this,
                         new String[]{Manifest.permission.CAMERA},
                         0);
-                Toast.makeText(AddFriendsActivity.this, "Permission ready.", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(AddFriendsActivity.this, "Permission ready.", Toast.LENGTH_SHORT).show();
             }
         } else {
             goScanner();
@@ -212,15 +216,15 @@ public class AddFriendsActivity extends AppCompatActivity implements View.OnClic
 
 
     private void goScanner() {
-        Toast.makeText(AddFriendsActivity.this, "OK", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(AddFriendsActivity.this, "OK", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(this, ScannerActivity.class);
         //这里可以用intent传递一些参数，比如扫码聚焦框尺寸大小，支持的扫码类型。
 //        //设置扫码框的宽
 //        intent.putExtra(Constant.EXTRA_SCANNER_FRAME_WIDTH, 400);
 //        //设置扫码框的高
 //        intent.putExtra(Constant.EXTRA_SCANNER_FRAME_HEIGHT, 400);
-//        //设置扫码框距顶部的位置
-//        intent.putExtra(Constant.EXTRA_SCANNER_FRAME_TOP_PADDING, 100);
+        //设置扫码框距顶部的位置
+        intent.putExtra(Constant.EXTRA_SCANNER_FRAME_TOP_PADDING, 150);
 //        //设置是否启用从相册获取二维码。
         intent.putExtra(Constant.EXTRA_IS_ENABLE_SCAN_FROM_PIC, true);
 //        Bundle bundle = new Bundle();

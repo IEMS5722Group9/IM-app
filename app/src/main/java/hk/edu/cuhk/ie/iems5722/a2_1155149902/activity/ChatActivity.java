@@ -104,14 +104,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             //mSocket = IO.socket("http://10.0.2.2:8001/");
             mSocket.on(Socket.EVENT_CONNECT, onConnectSuccess);
             mSocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
-
             mSocket.on("message", onMessage);
-            if(roomType.equals("group")){
-                mSocket.on("join", onJoin);
-                mSocket.on("leave", onLeave);
-            }
+//            if(roomType.equals("group")){
+//                mSocket.on("join", onJoin);
+//                mSocket.on("leave", onLeave);
+//            }
             mSocket.connect();
-            mSocket.emit("join", username, roomId);
+//            mSocket.emit("join", username, roomId);
 
         } catch (URISyntaxException e) {
             e.printStackTrace();
@@ -193,6 +192,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             mlistview.setAdapter(adapter);
             mlistview.setSelection(newList.messages.size());
             Toast.makeText(ChatActivity.this, "Load Success", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent();
+            intent.setAction("action.refreshRoom");
+            sendBroadcast(intent);
         }
     }
 
@@ -286,36 +288,36 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         }
     };
 
-    private Emitter.Listener onJoin = new Emitter.Listener() {
-        //发送
-        @Override
-        public void call(Object... args) {
+//    private Emitter.Listener onJoin = new Emitter.Listener() {
+//        //发送
+//        @Override
+//        public void call(Object... args) {
+//
+//            runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    JSONObject data = (JSONObject) args[0];
+//                    Log.e(TAG, String.valueOf(data));
+//                    String str = data.optString("data");
+//
+//                    Log.e(TAG, "加入房间");
+//                    Toast.makeText(ChatActivity.this, str, Toast.LENGTH_LONG).show();
+//                }
+//            });
+//        }
+//    };
 
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    JSONObject data = (JSONObject) args[0];
-                    Log.e(TAG, String.valueOf(data));
-                    String str = data.optString("data");
-
-                    Log.e(TAG, "加入房间");
-                    Toast.makeText(ChatActivity.this, str, Toast.LENGTH_LONG).show();
-                }
-            });
-        }
-    };
-
-    private Emitter.Listener onLeave = new Emitter.Listener() {
-        //发送
-        @Override
-        public void call(Object... args) {
-            JSONObject data = (JSONObject) args[0];
-            Log.e(TAG, String.valueOf(data));
-            String str = data.optString("data");
-            Log.e(TAG, "离开房间");
-            Toast.makeText(ChatActivity.this, str, Toast.LENGTH_LONG).show();
-        }
-    };
+//    private Emitter.Listener onLeave = new Emitter.Listener() {
+//        //发送
+//        @Override
+//        public void call(Object... args) {
+//            JSONObject data = (JSONObject) args[0];
+//            Log.e(TAG, String.valueOf(data));
+//            String str = data.optString("data");
+//            Log.e(TAG, "离开房间");
+//            Toast.makeText(ChatActivity.this, str, Toast.LENGTH_LONG).show();
+//        }
+//    };
 
     private Emitter.Listener onMessage = new Emitter.Listener() {
         //发送
