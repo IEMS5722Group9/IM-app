@@ -27,7 +27,7 @@ public class ViewUtil {
                 return "";
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             //压缩图片
-            bmp.compress(Bitmap.CompressFormat.PNG, 60, stream);
+            bmp.compress(Bitmap.CompressFormat.PNG, 10, stream);
             byte[] b = stream.toByteArray();
             // Base64Coder编码，将图片流以字符串形式存储下来
             return Base64Coder.encodeLines(b);
