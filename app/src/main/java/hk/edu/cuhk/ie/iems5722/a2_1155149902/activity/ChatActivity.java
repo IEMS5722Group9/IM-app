@@ -102,8 +102,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         toolbar.setTitle(roomName);
 
         try {
-            mSocket = IO.socket("http://18.219.150.95:8001/");
-            //mSocket = IO.socket("http://10.0.2.2:8001/");
+//            mSocket = IO.socket("http://18.219.150.95:8001/");
+            mSocket = IO.socket("http://10.0.2.2:8001/");
             mSocket.on(Socket.EVENT_CONNECT, onConnectSuccess);
             mSocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
             mSocket.on("message", onMessage);
