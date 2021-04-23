@@ -25,6 +25,7 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -61,7 +62,7 @@ public class HttpUtil {
         String result = "";
         try {
             String line = "";
-            isr = new InputStreamReader(is, "utf-8");
+            isr = new InputStreamReader(is, StandardCharsets.UTF_8);
             BufferedReader br = new BufferedReader(isr);
             while ((line = br.readLine()) != null) {
                 result += line;
@@ -187,7 +188,7 @@ public class HttpUtil {
         conn.setConnectTimeout(10000);
 
         conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
         conn.setRequestProperty("Content-Length", params.length() + "");
         conn.connect();
         return conn;

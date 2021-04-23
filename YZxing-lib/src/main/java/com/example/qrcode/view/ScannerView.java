@@ -95,7 +95,7 @@ public class ScannerView extends View {
         canvas.drawRect(0, mScannerRect.bottom + 1, width, height, mBgPaint);
         drawCorner(canvas, mScannerRect);
         drawFocusRect(canvas, mScannerRect);
-        drawTipText(canvas, getResources().getDisplayMetrics().widthPixels, mScannerRect.bottom + mTipPaddingTop);
+//        drawTipText(canvas, getResources().getDisplayMetrics().widthPixels, mScannerRect.bottom + mTipPaddingTop);
         drawLaser(canvas, mScannerRect);
         //实现动画效果
         postInvalidateDelayed(ANIMATION_DELAY, mScannerRect.left, mScannerRect.top, mScannerRect.right, mScannerRect.bottom);
