@@ -19,7 +19,7 @@ class MyDatabase:
             host="localhost",
             port=3306,  # default, can be omitted
             user="root",  # dbuser
-            password="123456",  # password
+            password="",  # password
             database="iems5722",
         )
         self.cursor = self.conn.cursor(dictionary=True)
@@ -86,8 +86,7 @@ def register_user():
 @app.route("/api/a3/get_chatrooms")
 def get_chatrooms():
     mydb = MyDatabase()
-    query = "SELECT chatrooms.id as room_id, chatrooms.name as room_name, chatrooms.type as room_type, messages.name as username, messages.message, messages.message_time" \
-            "FROM chatrooms, messages " \
+    query = "SELECT chatrooms.id as room_id, chatrooms.name as room_name, chatrooms.type as room_type, messages.name as username, messages.message, messages.message_time FROM chatrooms, messages " \
             "WHERE messages.id=(SELECT max(id) FROM messages where chatroom_id=chatrooms.id) ORDER BY messages.message_time DESC;"
     # query = "SELECT * FROM chatrooms"
     mydb.cursor.execute(query)
@@ -165,8 +164,7 @@ def send_message():
         "chatroom_id": chatroom_id,
         "message": message
     }
-    url = "http://127.0.0.1:8001/api/a4/broadcast_room"
-    # url = "http://18.219.150.95:8001/api/a4/broadcast_room"
+    url = "http://18.219.150.95:8001/api/a4/broadcast_room"
     res = requests.post(url, data=data)
     # 云服务器要pip install requests
     return jsonify(status='OK')
@@ -177,7 +175,8 @@ def send_message():
 def get_friends():
     user_id = request.args.get('user_id')
     mydb = MyDatabase()
-    query = "SELECT friend_id, friend_name FROM friends WHERE user_id=%s;" % user_id
+    # query = "SELECT friend_id, friend_name FROM friends WHERE user_id=%s;" % user_id
+    query = "SELECT friend_id, friend_name, users.avatar FROM friends, users WHERE friends.user_id=%s and friends.friend_id=users.id;" % user_id
     mydb.cursor.execute(query)
     friend = mydb.cursor.fetchall()
     return jsonify(status='OK', data=friend)
