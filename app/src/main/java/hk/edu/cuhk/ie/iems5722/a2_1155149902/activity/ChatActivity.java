@@ -192,7 +192,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             MessageAdapter adapter = new MessageAdapter(ChatActivity.this, mlist, userId, roomType);
             mlistview.setAdapter(adapter);
             mlistview.setSelection(newList.messages.size());
-            Toast.makeText(ChatActivity.this, "Load Success", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(ChatActivity.this, "Load Success", Toast.LENGTH_SHORT).show();
         }
     }
 

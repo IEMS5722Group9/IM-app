@@ -1,37 +1,26 @@
 package hk.edu.cuhk.ie.iems5722.a2_1155149902.util;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.SystemClock;
 import android.util.Log;
-
-import androidx.core.app.NotificationCompat;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.Chatroom;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.Message;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.MessageList;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.User;
@@ -44,6 +33,7 @@ public class HttpUtil {
         conn.setReadTimeout(10000);
         conn.setConnectTimeout(15000);
         conn.setDoInput(true);
+        conn.setRequestProperty("connection", "close");
         conn.connect();
         return conn;
     }
@@ -326,5 +316,81 @@ public class HttpUtil {
         } else {
             return target;
         }
+    }
+
+
+    public static String getAvatar(String url) throws IOException, JSONException {
+        String avatar;
+        String results = readStream(new URL(url).openStream());
+        try {
+            JSONArray data = new JSONObject(results).getJSONArray("data");
+            avatar = data.getJSONObject(0).getString("avatar");
+
+            int segmentSize = 3 * 1024;
+            long length = avatar.length();
+            while (avatar.length() > segmentSize ) {// 循环分段打印日志
+                String logContent = avatar.substring(0, segmentSize );
+                Log.e("avatar",logContent);
+                avatar = avatar.replace(logContent, "");
+            }
+            Log.e("avatar",avatar);// 打印剩余日志
+
+            return avatar;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+//        String urlParams = "user_id=" + params[1];
+//        HttpURLConnection conn = postConnection(params[0], urlParams);
+//        OutputStream os = conn.getOutputStream();
+//        os.write(urlParams.getBytes());
+//        os.flush();
+//
+//        int responseCode = conn.getResponseCode();
+//        if (responseCode == HttpURLConnection.HTTP_OK) {
+//            InputStream inputStream = conn.getInputStream();
+//            String results = readStream(inputStream);
+//            JSONObject jsonObject;
+//            jsonObject = new JSONObject(String.valueOf(results));
+//
+//                JSONArray data = jsonObject.getJSONArray("data");
+//                String avatar = data.getJSONObject(0).getString("avatar");
+//
+//                //avatar = avatar.replace("\n","");
+//                //Log.e("avatar2", avatar);
+//
+//                int segmentSize = 3 * 1024;
+//                long length = avatar.length();
+//                while (avatar.length() > segmentSize ) {// 循环分段打印日志
+//                    String logContent = avatar.substring(0, segmentSize );
+//                    Log.e("avatar",logContent);
+//                    avatar = avatar.replace(logContent, "");
+//                }
+//                Log.e("avatar",avatar);// 打印剩余日志
+//
+//                conn.disconnect();
+//                return avatar;
+//            }
+//
+//        conn.disconnect();
+    }
+
+        public static void postAvatar(String... params) throws IOException, JSONException {
+        //String str = params[1].replace("+", "%2B");
+            String str = params[1].replace("+", "%2B").replace("=", "%3D").replaceAll("[\\s*\t\n\r]", "");
+            String urlParams = "avatar=" + URLEncoder.encode(str) + "&user_id=" + params[2];
+            HttpURLConnection conn = postConnection(params[0], urlParams);
+            OutputStream os = conn.getOutputStream();
+            os.write(urlParams.getBytes());
+            os.flush();
+            os.close();
+
+            int responseCode = conn.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                Log.d("Avatar", "success");
+                InputStream inputStream = conn.getInputStream();
+                String results = readStream(inputStream);
+            }
+            conn.disconnect();
     }
 }
