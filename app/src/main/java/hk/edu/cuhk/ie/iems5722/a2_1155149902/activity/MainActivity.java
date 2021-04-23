@@ -20,6 +20,7 @@ import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
 
 public class MainActivity extends AppCompatActivity {
     BottomNavigationView navView;
+    private String avatar;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -74,5 +75,13 @@ public class MainActivity extends AppCompatActivity {
         //获取bundle传递的值
         Intent intent = getIntent();
         return intent.getExtras();
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }

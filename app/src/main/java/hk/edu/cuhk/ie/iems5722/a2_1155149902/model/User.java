@@ -23,6 +23,11 @@ public class User {
         this.id = id;
         this.username = username;
     }
+    public User(int id, String username, Drawable avatar) {
+        this.id = id;
+        this.username = username;
+        this.avatar = avatar;
+    }
     public String getName() {
         return username;
     }

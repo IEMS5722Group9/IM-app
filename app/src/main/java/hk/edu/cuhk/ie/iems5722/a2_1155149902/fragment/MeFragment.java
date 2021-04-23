@@ -252,27 +252,29 @@ public class MeFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    class AvatarGetTask extends AsyncTask<String, Void, String> {
+    class AvatarGetTask extends AsyncTask<String, Void, User> {
         @Override
-        protected String doInBackground(String... params) {
+        protected User doInBackground(String... params) {
             try {
                 // avatar = HttpUtil.getAvatar(params);
                 avatar = HttpUtil.getAvatar(params[0]);
-//                Log.e("avatar", avatar);
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
-            return avatar;
+            return null;
         }
 
-        protected void onPostExecute(String str) {
-            if(avatar == null) {
+        protected void onPostExecute(User me) {
+            //Log.e("avatar", avatar);
+            if(avatar == null || avatar.equals("")) {
                 iv_me.setImageResource(R.drawable.avatar);
             }else {
 //                Bitmap bitmap = ViewUtil.stringtoBitmap(avatar);
 //                iv_me.setImageBitmap(bitmap);
                 Drawable drawable = ViewUtil.StringToDrawable(avatar);
                 iv_me.setImageDrawable(drawable);
+                //me.setAvatar(avatar);
+                //((MainActivity)getActivity()).setAvatar(avatar);
             }
         }
     }

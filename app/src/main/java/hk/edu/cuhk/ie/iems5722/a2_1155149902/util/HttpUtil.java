@@ -1,5 +1,6 @@
 package hk.edu.cuhk.ie.iems5722.a2_1155149902.util;
 
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -208,7 +209,12 @@ public class HttpUtil {
             JSONArray data = new JSONObject(results).getJSONArray("data");
             for (int i = 0; i < data.length(); i++) {
                 JSONObject friend = data.getJSONObject(i);
-                fList.add(new User(friend.getInt("friend_id"), friend.getString("friend_name")));
+
+                //Log.e("avatar", friend.getString("avatar"));
+                Drawable drawable = ViewUtil.StringToDrawable(friend.getString("avatar"));
+                fList.add(new User(friend.getInt("friend_id"), friend.getString("friend_name"),drawable));
+
+                //fList.add(new User(friend.getInt("friend_id"), friend.getString("friend_name")));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -320,65 +326,34 @@ public class HttpUtil {
 
 
     public static String getAvatar(String url) throws IOException, JSONException {
+        String str;
         String avatar;
         String results = readStream(new URL(url).openStream());
         try {
             JSONArray data = new JSONObject(results).getJSONArray("data");
             avatar = data.getJSONObject(0).getString("avatar");
 
-            int segmentSize = 3 * 1024;
-            long length = avatar.length();
-            while (avatar.length() > segmentSize ) {// 循环分段打印日志
-                String logContent = avatar.substring(0, segmentSize );
-                Log.e("avatar",logContent);
-                avatar = avatar.replace(logContent, "");
-            }
-            Log.e("avatar",avatar);// 打印剩余日志
+//            str = avatar;
+//            int segmentSize = 3 * 1024;
+//            long length = str.length();
+//            while (str.length() > segmentSize ) {// 循环分段打印日志
+//                String logContent = str.substring(0, segmentSize );
+//                Log.e("avatar",logContent);
+//                str = str.replace(logContent, "");
+//            }
+//            Log.e("avatar",str);// 打印剩余日志
 
             return avatar;
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return null;
-//        String urlParams = "user_id=" + params[1];
-//        HttpURLConnection conn = postConnection(params[0], urlParams);
-//        OutputStream os = conn.getOutputStream();
-//        os.write(urlParams.getBytes());
-//        os.flush();
-//
-//        int responseCode = conn.getResponseCode();
-//        if (responseCode == HttpURLConnection.HTTP_OK) {
-//            InputStream inputStream = conn.getInputStream();
-//            String results = readStream(inputStream);
-//            JSONObject jsonObject;
-//            jsonObject = new JSONObject(String.valueOf(results));
-//
-//                JSONArray data = jsonObject.getJSONArray("data");
-//                String avatar = data.getJSONObject(0).getString("avatar");
-//
-//                //avatar = avatar.replace("\n","");
-//                //Log.e("avatar2", avatar);
-//
-//                int segmentSize = 3 * 1024;
-//                long length = avatar.length();
-//                while (avatar.length() > segmentSize ) {// 循环分段打印日志
-//                    String logContent = avatar.substring(0, segmentSize );
-//                    Log.e("avatar",logContent);
-//                    avatar = avatar.replace(logContent, "");
-//                }
-//                Log.e("avatar",avatar);// 打印剩余日志
-//
-//                conn.disconnect();
-//                return avatar;
-//            }
-//
-//        conn.disconnect();
     }
 
         public static void postAvatar(String... params) throws IOException, JSONException {
-        //String str = params[1].replace("+", "%2B");
-            String str = params[1].replace("+", "%2B").replace("=", "%3D").replaceAll("[\\s*\t\n\r]", "");
-            String urlParams = "avatar=" + URLEncoder.encode(str) + "&user_id=" + params[2];
+            //String str = params[1].replace("+", "%2B").replace("=", "%3D").replaceAll("[\\s*\t\n\r]", "");
+            //URLEncoder.encode(str) 特殊字符转义问题
+            String urlParams = "avatar=" + URLEncoder.encode(params[1]) + "&user_id=" + params[2];
             HttpURLConnection conn = postConnection(params[0], urlParams);
             OutputStream os = conn.getOutputStream();
             os.write(urlParams.getBytes());
