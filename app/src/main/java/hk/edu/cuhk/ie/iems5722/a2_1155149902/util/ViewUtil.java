@@ -6,6 +6,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Base64;
 
+import com.example.qrcode.utils.CommonUtils;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FilterInputStream;
@@ -27,7 +29,7 @@ public class ViewUtil {
                 return "";
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             //压缩图片
-            bmp.compress(Bitmap.CompressFormat.PNG, 10, stream);
+            bmp.compress(Bitmap.CompressFormat.PNG, 5, stream);
             byte[] b = stream.toByteArray();
             // Base64Coder编码，将图片流以字符串形式存储下来
             return Base64Coder.encodeLines(b);
