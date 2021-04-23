@@ -6,10 +6,12 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.util.Log;
@@ -48,6 +50,7 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 
@@ -103,10 +106,12 @@ public class ScannerActivity extends AppCompatActivity implements SurfaceHolder.
 //        }
 //    }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_activity_scanner);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         initView();
         hasSurface = false;
         Intent intent = getIntent();
@@ -210,6 +215,8 @@ public class ScannerActivity extends AppCompatActivity implements SurfaceHolder.
                 ActivityCompat.requestPermissions(ScannerActivity.this
                         , new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE_WRITE_EXTERNAL_STORAGE);
             }
+        } else if (item.getItemId() == android.R.id.home) {
+            finish();
         }
         return true;
     }
@@ -222,15 +229,11 @@ public class ScannerActivity extends AppCompatActivity implements SurfaceHolder.
 
     private void initView() {
         mToolBar = (Toolbar) findViewById(R.id.tool_bar);
-        mToolBar.setTitle("QR Code");
-        mToolBar.setTitleTextColor(Color.WHITE);
+        mToolBar.setTitle("Scan QR Code");
+        mToolBar.setTitleTextColor(Color.BLACK);
         setSupportActionBar(mToolBar);
-        mToolBar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
         mSurfaceView = (SurfaceView) findViewById(R.id.surface);
         mScannerView = (ScannerView) findViewById(R.id.scan_view);
     }
@@ -321,7 +324,7 @@ public class ScannerActivity extends AppCompatActivity implements SurfaceHolder.
                     Result result = decodeFromPicture(bitmap);
                     String text = result.getText();
                     Intent intent = new Intent();
-                    intent.putExtra(Constant.EXTRA_RESULT_CONTENT,  text);
+                    intent.putExtra(Constant.EXTRA_RESULT_CONTENT, text);
                     setResult(RESULT_OK, intent);
                     finish();
                     break;
