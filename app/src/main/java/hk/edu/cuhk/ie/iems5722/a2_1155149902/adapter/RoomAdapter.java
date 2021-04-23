@@ -21,6 +21,7 @@ public class RoomAdapter extends ArrayAdapter<Chatroom> {
     public Context mContext;
     public LayoutInflater layoutInflater;
     public String username;
+    public String avatar;
 
     public RoomAdapter(Context context, ArrayList<Chatroom> list, String username) {
         super(context, 0, list);

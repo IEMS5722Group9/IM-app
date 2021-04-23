@@ -100,7 +100,7 @@ public class MeFragment extends Fragment implements View.OnClickListener {
         generateQrcodeAndDisplay();
         iv_me = (ImageView) root.findViewById(R.id.me_image);
 
-        String URL = getAvatarUrl + "?user_id=" +  userId;
+        String URL = getAvatarUrl + "?username=" +  username;
         new AvatarGetTask().execute(URL);
         //new AvatarGetTask().execute(getAvatarUrl, userId);
 
@@ -266,7 +266,7 @@ public class MeFragment extends Fragment implements View.OnClickListener {
 
         protected void onPostExecute(User me) {
             //Log.e("avatar", avatar);
-            if(avatar == null || avatar.equals("")) {
+            if(avatar.isEmpty() || avatar.equals("null")) {
                 iv_me.setImageResource(R.drawable.avatar);
             }else {
 //                Bitmap bitmap = ViewUtil.stringtoBitmap(avatar);

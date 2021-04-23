@@ -1,5 +1,6 @@
 package hk.edu.cuhk.ie.iems5722.a2_1155149902.util;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.Message;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.MessageList;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.User;
@@ -203,7 +205,7 @@ public class HttpUtil {
         conn.disconnect();
     }
 
-    public static ArrayList<User> fetchFriendList(String url) throws IOException {
+    public static ArrayList<User> fetchFriendList(Context context, String url) throws IOException {
         ArrayList<User> fList = new ArrayList<>();
         String results = readStream(new URL(url).openStream());
         try {
@@ -211,10 +213,14 @@ public class HttpUtil {
             for (int i = 0; i < data.length(); i++) {
                 JSONObject friend = data.getJSONObject(i);
 
-                //Log.e("avatar", friend.getString("avatar"));
-                Drawable drawable = ViewUtil.StringToDrawable(friend.getString("avatar"));
-                fList.add(new User(friend.getInt("friend_id"), friend.getString("friend_name"),drawable));
-
+                String avatarStr = friend.getString("avatar");
+                if(avatarStr.equals("") || avatarStr.equals("null")){
+                    Drawable draw = context.getResources().getDrawable(R.drawable.avatar);
+                    fList.add(new User(friend.getInt("friend_id"), friend.getString("friend_name"),draw));
+                } else {
+                    Drawable drawable = ViewUtil.StringToDrawable(avatarStr);
+                    fList.add(new User(friend.getInt("friend_id"), friend.getString("friend_name"), drawable));
+                }
                 //fList.add(new User(friend.getInt("friend_id"), friend.getString("friend_name")));
             }
         } catch (JSONException e) {

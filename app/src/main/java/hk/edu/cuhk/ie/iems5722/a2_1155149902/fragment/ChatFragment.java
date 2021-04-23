@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -38,6 +39,7 @@ import hk.edu.cuhk.ie.iems5722.a2_1155149902.adapter.RoomAdapter;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.User;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.HttpUtil;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.UrlUtil;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.ViewUtil;
 
 public class ChatFragment extends Fragment {
 
@@ -47,6 +49,8 @@ public class ChatFragment extends Fragment {
     private String username;
     private String baseUrl = UrlUtil.BaseUrl;
     private String URL = baseUrl + "/api/a3/get_chatrooms";
+    private String getAvatarUrl = baseUrl + "/api/a3/get_avatar";
+    private String avatar;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -161,6 +165,8 @@ public class ChatFragment extends Fragment {
                     room.setMessage(message_user, message, messag_time);
                 }
                 rList.add(room);
+                String URL = getAvatarUrl + "?username=" +  username;
+                new AvatarGetTask().execute(URL);
                 //rList.add(new Chatroom(chatroom.getString("id"), chatroom.getString("name")));
             }
         } catch (JSONException e) {
@@ -168,5 +174,21 @@ public class ChatFragment extends Fragment {
         }
         Log.d("Chatrooms", results);// 打印获取信息
         return rList;
+    }
+
+    class AvatarGetTask extends AsyncTask<String, Void, User> {
+        @Override
+        protected User doInBackground(String... params) {
+            try {
+                avatar = HttpUtil.getAvatar(params[0]);
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(User me) {
+
+        }
     }
 }

@@ -4,8 +4,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,9 +21,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
@@ -32,6 +37,7 @@ import hk.edu.cuhk.ie.iems5722.a2_1155149902.adapter.FriendAdapter;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.User;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.HttpUtil;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.UrlUtil;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.ViewUtil;
 
 public class FriendsFragment extends Fragment {
     private ListView friendListView;
@@ -91,7 +97,7 @@ public class FriendsFragment extends Fragment {
         protected ArrayList<User> doInBackground(String... params) {
             // params[0]为请求网站，因为只传了一个网址，所以只取0即可
             try {
-                return HttpUtil.fetchFriendList(params[0]);
+                return HttpUtil.fetchFriendList(getContext(), params[0]);
             } catch (IOException e) {
                 e.printStackTrace();
             }

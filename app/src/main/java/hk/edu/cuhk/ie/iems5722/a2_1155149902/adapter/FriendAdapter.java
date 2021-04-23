@@ -2,6 +2,7 @@ package hk.edu.cuhk.ie.iems5722.a2_1155149902.adapter;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,10 +55,13 @@ public class FriendAdapter extends ArrayAdapter<User> {
             holder.name.setText(friend.username);
             holder.id.setText("ID: " + friend.id);
 
-            if(friend.avatar == null || friend.avatar.equals("")) {
-                holder.avatar.setImageResource(R.drawable.avatar);
-            } else {
+            //Drawable drawable = ViewUtil.StringToDrawable("");
+            //holder.avatar.setImageDrawable(drawable);
+
+            if(friend.avatar != null){
                 holder.avatar.setImageDrawable(friend.avatar);
+            } else {
+                holder.avatar.setImageResource(R.drawable.avatar);
             }
 
         } else {
