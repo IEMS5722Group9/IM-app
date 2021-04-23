@@ -31,6 +31,8 @@ public class QRCodeUtil {
             if (!TextUtils.isEmpty(character_set)) {
                 hints.put(EncodeHintType.CHARACTER_SET, character_set);
             }
+            //设置二维码白色边框大小
+            hints.put(EncodeHintType.MARGIN, "1");
 
             /** 2.将配置参数传入到QRCodeWriter的encode方法生成BitMatrix(位矩阵)对象 */
             BitMatrix bitMatrix = new QRCodeWriter().encode(content, BarcodeFormat.QR_CODE, width, height, hints);

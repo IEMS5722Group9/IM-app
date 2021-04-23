@@ -54,7 +54,7 @@ public class RoomAdapter extends ArrayAdapter<Chatroom> {
             holder = (RoomAdapter.ViewHolder) convertView.getTag();
         }
         if (room.room_type.equals("group")) {
-            holder.image.setImageResource(R.drawable.group_image);
+            holder.image.setImageResource(R.drawable.group);
         }
         holder.name.setText(room.room_name);
         try {

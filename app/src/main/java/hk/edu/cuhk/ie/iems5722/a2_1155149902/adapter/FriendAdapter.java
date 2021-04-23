@@ -1,16 +1,19 @@
 package hk.edu.cuhk.ie.iems5722.a2_1155149902.adapter;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.User;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.ViewUtil;
 
 public class FriendAdapter extends ArrayAdapter<User> {
     public ArrayList<User> friendsList;
@@ -47,8 +50,16 @@ public class FriendAdapter extends ArrayAdapter<User> {
             convertView = layoutInflater.inflate(R.layout.item_friend, viewGroup, false);
             holder.name = (TextView) convertView.findViewById(R.id.friend_name);
             holder.id = (TextView) convertView.findViewById(R.id.friend_id);
+            holder.avatar = (ImageView) convertView.findViewById(R.id.friend_image);
             holder.name.setText(friend.username);
             holder.id.setText("ID: " + friend.id);
+
+            if(friend.avatar == null || friend.avatar.equals("")) {
+                holder.avatar.setImageResource(R.drawable.avatar);
+            } else {
+                holder.avatar.setImageDrawable(friend.avatar);
+            }
+
         } else {
             convertView = layoutInflater.inflate(R.layout.item_friend_total, viewGroup, false);
             TextView count = convertView.findViewById(R.id.friend_total);
@@ -64,5 +75,6 @@ public class FriendAdapter extends ArrayAdapter<User> {
     private static class ViewHolder {
         TextView name;
         TextView id;
+        ImageView avatar;
     }
 }
