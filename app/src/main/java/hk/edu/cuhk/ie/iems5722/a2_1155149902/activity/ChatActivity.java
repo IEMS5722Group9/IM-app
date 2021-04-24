@@ -70,6 +70,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private NotificationManager notificationManager;
     private Socket mSocket;
     private Context mContext;
+    private Boolean allLoaded = false;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -144,8 +145,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                         isFirstRow = false;
                         isLoading = true;
                     } else {
-                        Toast.makeText(ChatActivity.this, "No more messages", Toast.LENGTH_SHORT).show();
-                        isLastPage = true;
+                        if (!allLoaded) {
+                            Toast.makeText(ChatActivity.this, "No more messages", Toast.LENGTH_SHORT).show();
+                            allLoaded = true;
+                            isLastPage = true;
+                        }
                     }
                 }
             }
@@ -167,6 +171,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         switch (view.getId()) {
             case R.id.refresh:
                 //点击刷新按钮回到第一页
+                allLoaded = false;
                 mlist = new ArrayList<>();
                 new MyGetTask().execute(getURL + 1);
                 break;
@@ -249,8 +254,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            mlist = new ArrayList<>();
-            new MyGetTask().execute(getURL + 1);
+//            mlist = new ArrayList<>();
+//            new MyGetTask().execute(getURL + 1);
             Intent intent = new Intent();
             intent.setAction("action.refreshRoom");
             sendBroadcast(intent);
@@ -383,12 +388,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     JSONObject data = (JSONObject) args[0];
                     String msg = data.optString("message");
                     String room = data.optString("chatroom_id");
-                    sendNotification(msg, room);
+                    allLoaded = false;
                     mlist = new ArrayList<>();
                     new MyGetTask().execute(getURL + 1);
                     Intent intent = new Intent();
                     intent.setAction("action.refreshRoom");
                     sendBroadcast(intent);
+                    sendNotification(msg, room);
                 }
             });
         }

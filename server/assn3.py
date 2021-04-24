@@ -55,7 +55,7 @@ def getMessagesFromDB(chatroom_id, page):
 def get_user():
     username = request.form.get('username')
     mydb = MyDatabase()
-    query = "select * from users where username=\"%s\"" % username
+    query = "select * from users where BINARY username=\"%s\"" % username
     mydb.cursor.execute(query)
     user = mydb.cursor.fetchall()
     if len(user) == 0:
