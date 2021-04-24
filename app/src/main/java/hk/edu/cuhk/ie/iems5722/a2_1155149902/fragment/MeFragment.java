@@ -5,17 +5,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Base64;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,15 +21,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import org.json.JSONException;
 
-import java.io.File;
 import java.io.IOException;
 
-import hk.edu.cuhk.ie.iems5722.a2_1155149902.activity.LoginActivity;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.User;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.HttpUtil;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.ImageUtil;
@@ -41,11 +34,10 @@ import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.QRCodeUtil;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.activity.MainActivity;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.UrlUtil;
-import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.ViewUtil;
 
 import static android.app.Activity.RESULT_CANCELED;
 
-public class MeFragment extends Fragment implements View.OnClickListener {
+public class MeFragment extends Fragment {
     private String userId;
     private String username;
     private Button btn_QR;
@@ -100,7 +92,7 @@ public class MeFragment extends Fragment implements View.OnClickListener {
         generateQrcodeAndDisplay();
         iv_me = (ImageView) root.findViewById(R.id.me_image);
 
-        String URL = getAvatarUrl + "?user_id=" +  userId;
+        String URL = getAvatarUrl + "?username=" + username;
         new AvatarGetTask().execute(URL);
         //new AvatarGetTask().execute(getAvatarUrl, userId);
 
@@ -116,11 +108,6 @@ public class MeFragment extends Fragment implements View.OnClickListener {
             }
         });
         return root;
-    }
-
-    @Override
-    public void onClick(View view) {
-        generateQrcodeAndDisplay();
     }
 
     @Override
@@ -201,12 +188,14 @@ public class MeFragment extends Fragment implements View.OnClickListener {
                         setPicToView(data);
                     }
                     break;
-                }
             }
-            super.onActivityResult(requestCode, resultCode, data);
         }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 
-    /**裁剪照片*/
+    /**
+     * 裁剪照片
+     */
     public void startPhotoZoom(Uri uri) {
         Intent intent = new Intent("com.android.camera.action.CROP");
         intent.setDataAndType(uri, "image/*");
@@ -227,7 +216,7 @@ public class MeFragment extends Fragment implements View.OnClickListener {
         if (extras != null) {
             Bitmap photo = extras.getParcelable("data");
             Drawable drawable = new BitmapDrawable(photo);
-            String avatar = ViewUtil.DrawableToString(drawable);
+            String avatar = ImageUtil.DrawableToString(drawable);
             //Log.e("avatar", avatar);
             //String avatar = ViewUtil.bitmaptoString(photo);
             new AvatarPostTask().execute(postAvatarUrl, avatar, userId);
@@ -265,13 +254,12 @@ public class MeFragment extends Fragment implements View.OnClickListener {
         }
 
         protected void onPostExecute(User me) {
-            //Log.e("avatar", avatar);
-            if(avatar == null || avatar.equals("")) {
+            if (avatar == null || avatar.equals("null")) {
                 iv_me.setImageResource(R.drawable.avatar);
-            }else {
+            } else {
 //                Bitmap bitmap = ViewUtil.stringtoBitmap(avatar);
 //                iv_me.setImageBitmap(bitmap);
-                Drawable drawable = ViewUtil.StringToDrawable(avatar);
+                Drawable drawable = ImageUtil.StringToDrawable(avatar);
                 iv_me.setImageDrawable(drawable);
                 //me.setAvatar(avatar);
                 //((MainActivity)getActivity()).setAvatar(avatar);

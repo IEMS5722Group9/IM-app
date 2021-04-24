@@ -1,5 +1,6 @@
 package hk.edu.cuhk.ie.iems5722.a2_1155149902.util;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.Message;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.MessageList;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.User;
@@ -35,7 +37,7 @@ public class HttpUtil {
         conn.setReadTimeout(10000);
         conn.setConnectTimeout(15000);
         conn.setDoInput(true);
-        conn.setRequestProperty("connection", "close");
+        conn.setRequestProperty("Connection", "close");
         conn.connect();
         return conn;
     }
@@ -48,7 +50,7 @@ public class HttpUtil {
      * 最终拼接到result里面。
      * 这样就完成了整个数据的读取。
      * */
-    public static String readStream(InputStream is) {
+    public static String readStream(InputStream is) throws IOException {
         InputStreamReader isr;
         String result = "";
         try {
@@ -130,25 +132,30 @@ public class HttpUtil {
 //        return rList;
 //    }
 
-    public static MessageList fetchMessage(String url) throws MalformedURLException {
+    public static MessageList fetchMessage(Context context, String url) throws MalformedURLException {
         MessageList dataList = new MessageList();
         dataList.messages = new ArrayList<Message>();
         String jsonString = null;
         try {
-            jsonString = readStream(new URL(url).openStream());
+            jsonString = readStream(getConnection(url).getInputStream());
+            Log.d("Chat", jsonString);// 打印获取信息
             JSONObject jsonObject;
             try {
                 //解析JSON数据到List中
                 jsonObject = new JSONObject(jsonString);
-                JSONObject data = jsonObject.getJSONObject("data");
-                JSONArray messages = data.getJSONArray("messages");
-                dataList.total_pages = data.getString("total_pages");
-                dataList.current_page = data.getString("current_page");
+                if (jsonObject.getString("status").equals("OK")) {
+                    JSONObject data = jsonObject.getJSONObject("data");
+                    JSONArray messages = data.getJSONArray("messages");
+                    dataList.total_pages = data.optString("total_pages");
+                    dataList.current_page = data.optString("current_page");
 
-                for (int i = 0; i < messages.length(); i++) {
-                    Message message = parseMessage(messages.getJSONObject(i));
-                    //倒序展示，最新的一条在最底部
-                    dataList.messages.add(0, message);
+                    for (int i = 0; i < messages.length(); i++) {
+                        Message message = parseMessage(context, messages.getJSONObject(i));
+                        //倒序展示，最新的一条在最底部
+                        dataList.messages.add(0, message);
+                    }
+                } else {
+                    return null;
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -157,18 +164,23 @@ public class HttpUtil {
             e.printStackTrace();
         }
 
-        Log.d("Chat", jsonString);// 打印获取信息
         return dataList;
     }
 
-    public static Message parseMessage(JSONObject json) throws JSONException {
+    public static Message parseMessage(Context context, JSONObject json) throws JSONException {
         String id = json.getString("id");
         String roomId = json.getString("chatroom_id");
         String userId = json.getString("user_id");
         String name = json.getString("name");
         String content = json.getString("message");
         String time = json.getString("message_time");
-        return new Message(id, roomId, userId, name, content, time);
+        String avatar = json.getString("avatar");
+        Message m = new Message(id, roomId, userId, name, content, time);
+        if (avatar.equals("") || avatar.equals("null"))
+            m.setAvatar(context.getResources().getDrawable(R.drawable.avatar));
+        else
+            m.setAvatar(avatar);
+        return m;
     }
 
     public static HttpURLConnection postConnection(String postUrl, String params) throws
@@ -181,6 +193,7 @@ public class HttpUtil {
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
         conn.setRequestProperty("Content-Length", params.length() + "");
+        conn.setRequestProperty("Connection", "close");
         conn.connect();
         return conn;
     }
@@ -203,19 +216,23 @@ public class HttpUtil {
         conn.disconnect();
     }
 
-    public static ArrayList<User> fetchFriendList(String url) throws IOException {
+    public static ArrayList<User> fetchFriendList(Context context, String url) throws IOException {
         ArrayList<User> fList = new ArrayList<>();
-        String results = readStream(new URL(url).openStream());
+        String results = readStream(getConnection(url).getInputStream());
         try {
             JSONArray data = new JSONObject(results).getJSONArray("data");
             for (int i = 0; i < data.length(); i++) {
                 JSONObject friend = data.getJSONObject(i);
-
-                //Log.e("avatar", friend.getString("avatar"));
-                Drawable drawable = ViewUtil.StringToDrawable(friend.getString("avatar"));
-                fList.add(new User(friend.getInt("friend_id"), friend.getString("friend_name"),drawable));
-
-                //fList.add(new User(friend.getInt("friend_id"), friend.getString("friend_name")));
+                Drawable drawable;
+                String avatarStr = friend.getString("avatar");
+                User user = new User(friend.getInt("friend_id"), friend.getString("friend_name"));
+                if (avatarStr.equals("") || avatarStr.equals("null")) {
+                    drawable = context.getResources().getDrawable(R.drawable.avatar);
+                } else {
+                    drawable = ImageUtil.StringToDrawable(avatarStr);
+                }
+                user.setAvatar(drawable);
+                fList.add(user);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -224,7 +241,7 @@ public class HttpUtil {
         return fList;
     }
 
-    public static User searchFriend(String... params) throws IOException, JSONException {
+    public static User searchFriend(Context context, String... params) throws IOException, JSONException {
         User friend = new User();
         String urlParams = "&user_id=" + params[1] + "&friend_id=" + params[2];
         HttpURLConnection conn = postConnection(params[0], urlParams);
@@ -245,6 +262,12 @@ public class HttpUtil {
                 JSONArray data = jsonObject.getJSONArray("data");
                 friend.id = Integer.parseInt(data.getJSONObject(0).getString("id"));
                 friend.username = data.getJSONObject(0).getString("username");
+                String avatarStr = data.getJSONObject(0).getString("avatar");
+                if (avatarStr.equals("") || avatarStr.equals("null")) {
+                    friend.setAvatar(context.getResources().getDrawable(R.drawable.avatar));
+                } else {
+                    friend.setAvatar(avatarStr);
+                }
                 conn.disconnect();
                 return friend;
             }
@@ -329,7 +352,7 @@ public class HttpUtil {
     public static String getAvatar(String url) throws IOException, JSONException {
         String str;
         String avatar;
-        String results = readStream(new URL(url).openStream());
+        String results = readStream(getConnection(url).getInputStream());
         try {
             JSONArray data = new JSONObject(results).getJSONArray("data");
             avatar = data.getJSONObject(0).getString("avatar");
@@ -351,22 +374,22 @@ public class HttpUtil {
         return null;
     }
 
-        public static void postAvatar(String... params) throws IOException, JSONException {
-            //String str = params[1].replace("+", "%2B").replace("=", "%3D").replaceAll("[\\s*\t\n\r]", "");
-            //URLEncoder.encode(str) 特殊字符转义问题
-            String urlParams = "avatar=" + URLEncoder.encode(params[1]) + "&user_id=" + params[2];
-            HttpURLConnection conn = postConnection(params[0], urlParams);
-            OutputStream os = conn.getOutputStream();
-            os.write(urlParams.getBytes());
-            os.flush();
-            os.close();
+    public static void postAvatar(String... params) throws IOException, JSONException {
+        //String str = params[1].replace("+", "%2B").replace("=", "%3D").replaceAll("[\\s*\t\n\r]", "");
+        //URLEncoder.encode(str) 特殊字符转义问题
+        String urlParams = "avatar=" + URLEncoder.encode(params[1]) + "&user_id=" + params[2];
+        HttpURLConnection conn = postConnection(params[0], urlParams);
+        OutputStream os = conn.getOutputStream();
+        os.write(urlParams.getBytes());
+        os.flush();
+        os.close();
 
-            int responseCode = conn.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                Log.d("Avatar", "success");
-                InputStream inputStream = conn.getInputStream();
-                String results = readStream(inputStream);
-            }
-            conn.disconnect();
+        int responseCode = conn.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            Log.d("Avatar", "success");
+            InputStream inputStream = conn.getInputStream();
+            String results = readStream(inputStream);
+        }
+        conn.disconnect();
     }
 }

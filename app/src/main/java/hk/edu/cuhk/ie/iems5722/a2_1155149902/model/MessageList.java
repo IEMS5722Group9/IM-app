@@ -8,6 +8,8 @@ public class MessageList {
     public ArrayList<Message> messages;
     public String total_pages;
 
+    public MessageList() {
+    }
 //    public MessageList(String current_page, List<Message> messages, String total_pages){
 //        this.current_page = current_page;
 //        this.messages = messages;

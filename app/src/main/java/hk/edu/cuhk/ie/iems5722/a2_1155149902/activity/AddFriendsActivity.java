@@ -1,6 +1,7 @@
 package hk.edu.cuhk.ie.iems5722.a2_1155149902.activity;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,6 +46,8 @@ public class AddFriendsActivity extends AppCompatActivity implements View.OnClic
     private boolean alreadyAdd = false;
     private EditText editText;
     private TextView text_name;
+    private TextView text_id;
+    private ImageView text_avatar;
     private ImageButton btn_search;
     private Button btn_add;
     private LinearLayout linear;
@@ -53,6 +57,7 @@ public class AddFriendsActivity extends AppCompatActivity implements View.OnClic
     private String addURL = baseUrl + "/api/a3/add_friend";
     private final int REQUEST_PERMISION_CODE_CAMARE = 0;
     private final int RESULT_REQUEST_CODE = 1;
+    private Context mContext;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -60,7 +65,7 @@ public class AddFriendsActivity extends AppCompatActivity implements View.OnClic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-
+        mContext = this;
 //        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         //设置返回键可用
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -95,18 +100,11 @@ public class AddFriendsActivity extends AppCompatActivity implements View.OnClic
         }
     }
 
-    class MySearchTask extends AsyncTask<String, Void, String> {
+    class MySearchTask extends AsyncTask<String, Void, User> {
         @Override
-        protected String doInBackground(String... params) {
+        protected User doInBackground(String... params) {
             try {
-                User friend = HttpUtil.searchFriend(params);
-                if (friend == null) {
-                    userExist = false;
-                } else {
-                    friend_id = String.valueOf(friend.id);
-                    friend_name = friend.username;
-                    userExist = true;
-                }
+                return HttpUtil.searchFriend(mContext, params);
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
@@ -114,15 +112,24 @@ public class AddFriendsActivity extends AppCompatActivity implements View.OnClic
         }
 
         @Override
-        protected void onPostExecute(String result) {
+        protected void onPostExecute(User result) {
             super.onPostExecute(result);
+            userExist = result != null;
             if (!userExist) {
                 Toast.makeText(AddFriendsActivity.this, "User does not exists", Toast.LENGTH_LONG).show();
             } else {
+                friend_id = String.valueOf(result.getId());
+                friend_name = result.getName();
+
                 linear.setVisibility(View.VISIBLE);
                 btn_add = (Button) findViewById(R.id.add_button);
                 text_name = (TextView) findViewById(R.id.text_name);
+                text_id = (TextView) findViewById(R.id.text_id);
+
+                text_avatar = (ImageView) findViewById(R.id.text_avatar);
                 text_name.setText(friend_name);
+                text_id.setText("ID: " + friend_id);
+                text_avatar.setImageDrawable(result.getAvatar());
 
                 btn_add.setOnClickListener(new View.OnClickListener() {
                     @Override

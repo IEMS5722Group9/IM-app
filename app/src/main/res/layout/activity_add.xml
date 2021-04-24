@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container_add_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -41,27 +42,66 @@
         android:id="@+id/linear_friend"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:layout_margin="10dp"
         android:layout_marginTop="5dp"
         android:baselineAligned="false"
         android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/add_button"
-            android:layout_width="75dp"
+        <ImageView
+            android:id="@+id/text_avatar"
+            android:layout_width="50dp"
             android:layout_height="50dp"
-            android:text="add" />
+            tools:src="@drawable/avatar" />
 
-        <TextView
-            android:id="@+id/text_name"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_weight="1"
-            android:gravity="center_vertical|center"
-            android:text="wang"
-            android:textColor="#000"
-            android:textSize="20sp" />
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp">
 
+            <TextView
+                android:id="@+id/text_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="用户名"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/text_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/text_name"
+                android:layout_alignLeft="@id/text_name"
+                android:layout_marginTop="5dp"
+                android:hint="用户ID"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/add_button"
+                android:layout_width="75dp"
+                android:layout_height="50dp"
+                android:layout_alignParentRight="true"
+                android:text="add" />
+
+        </RelativeLayout>
+        <!--        <Button-->
+        <!--            android:id="@+id/add_button"-->
+        <!--            android:layout_width="75dp"-->
+        <!--            android:layout_height="50dp"-->
+        <!--            android:text="add" />-->
+
+        <!--        <TextView-->
+        <!--            android:id="@+id/text_name"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="50dp"-->
+        <!--            android:layout_marginLeft="20dp"-->
+        <!--            android:layout_marginRight="20dp"-->
+        <!--            android:layout_weight="1"-->
+        <!--            android:gravity="center_vertical|center"-->
+        <!--            android:text="wang"-->
+        <!--            android:textColor="#000"-->
+        <!--            android:textSize="20sp" />-->
+
+        <!--    </LinearLayout>-->
     </LinearLayout>
 </LinearLayout>

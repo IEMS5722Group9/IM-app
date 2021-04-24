@@ -91,7 +91,7 @@ public class FriendsFragment extends Fragment {
         protected ArrayList<User> doInBackground(String... params) {
             // params[0]为请求网站，因为只传了一个网址，所以只取0即可
             try {
-                return HttpUtil.fetchFriendList(params[0]);
+                return HttpUtil.fetchFriendList(getContext(), params[0]);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -175,6 +175,5 @@ public class FriendsFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         requireActivity().unregisterReceiver(mRefreshBroadcastReceiver);
-
     }
 }

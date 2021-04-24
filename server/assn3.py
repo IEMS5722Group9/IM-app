@@ -19,7 +19,7 @@ class MyDatabase:
             host="localhost",
             port=3306,  # default, can be omitted
             user="root",  # dbuser
-            password="",  # password
+            password="123456",  # password
             database="iems5722",
         )
         self.cursor = self.conn.cursor(dictionary=True)
@@ -41,7 +41,8 @@ app.json_encoder = DateEncoder
 
 def getMessagesFromDB(chatroom_id, page):
     mydb = MyDatabase()
-    query = "select * from messages where chatroom_id=%s order by message_time desc, id desc limit %s,%s"
+    query = "select messages.*, users.avatar from messages, users where messages.user_id=users.id and messages.chatroom_id=%s order by messages.message_time desc, messages.id desc limit %s, %s;"
+    # query = "select * from messages where chatroom_id=%s order by message_time desc, id desc limit %s,%s"
     cur_first = 10 * (int(page) - 1)
     params = (chatroom_id, cur_first, 10)
     mydb.cursor.execute(query, params)
@@ -126,7 +127,6 @@ def get_messages():
     page = request.args.get('page')
     if not all([chatroom_id, page]):
         return jsonify(message='<error message>', status='ERROR')
-    messages = getMessagesFromDB(chatroom_id, page)
 
     mydb = MyDatabase()
     query1 = "select count(*) from messages where chatroom_id=%s"
@@ -136,12 +136,13 @@ def get_messages():
     total_messages = list(get_total.values())[0]
     total_pages = math.floor((total_messages - 1) / 10) + 1
     current_page = page
-    datalist = {"current_page": current_page, "messages": messages, "total_pages": total_pages}
+    if int(current_page) > int(total_pages):
+        return jsonify(message='No data', status='ERROR')
 
-    # if messages:
+    messages = getMessagesFromDB(chatroom_id, page)
+    datalist = {"current_page": current_page, "messages": messages, "total_pages": total_pages}
+    # print(datalist)
     return jsonify(status='OK', data=datalist)
-    # else:
-    #     return jsonify(message='No data', status='ERROR')
 
 
 # /send_message/chatroom_id=1&user_id=1234567891&name=Bob&message=hi
@@ -187,7 +188,7 @@ def get_friends():
 def search_friend():
     friend_id = request.form.get('friend_id')
     mydb = MyDatabase()
-    query = "select id, username from users where id=%s" % friend_id
+    query = "select * from users where id=%s" % friend_id
     mydb.cursor.execute(query)
     friend = mydb.cursor.fetchall()
     if len(friend) == 0:
@@ -219,18 +220,26 @@ def add_friend():
     return jsonify(status='OK')
 
 
-# /api/a3/get_avatar?user_id=1
+# /api/a3/get_avatar?username=alice
 @app.route('/api/a3/get_avatar')
 def get_avatar():
-    user_id = request.args.get('user_id')
+    username = request.args.get('username')
     mydb = MyDatabase()
-    query = "select avatar from users where id=%s" % user_id
+    query = "select avatar from users where username=\"%s\"" % username
     mydb.cursor.execute(query)
     avatar = mydb.cursor.fetchall()
-    # str1 = str(avatar[0]).replace("[\\t\\n\\r]", "");
-    # print(str1)
     return jsonify(status='OK', data=avatar)
 
+
+# # /api/a3/get_avatar?user_id=1
+# @app.route('/api/a3/get_avatar')
+# def get_avatar():
+#     user_id = request.args.get('user_id')
+#     mydb = MyDatabase()
+#     query = "select avatar from users where id=%s" % user_id
+#     mydb.cursor.execute(query)
+#     avatar = mydb.cursor.fetchall()
+#     return jsonify(status='OK', data=avatar)
 
 # /api/a3/post_avatar
 @app.route("/api/a3/post_avatar", methods=['POST'])

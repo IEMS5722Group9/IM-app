@@ -9,7 +9,7 @@
         android:id="@+id/friend_image"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        tools:src="@tools:sample/avatars" />
+        tools:src="@drawable/avatar" />
 
     <RelativeLayout
         android:layout_width="match_parent"

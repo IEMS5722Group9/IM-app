@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,11 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.ArrayList;
 
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.activity.ChatActivity;
@@ -47,6 +42,7 @@ public class ChatFragment extends Fragment {
     private String username;
     private String baseUrl = UrlUtil.BaseUrl;
     private String URL = baseUrl + "/api/a3/get_chatrooms";
+    private String getAvatarUrl = baseUrl + "/api/a3/get_avatar";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -81,7 +77,6 @@ public class ChatFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Chatroom get = (Chatroom) parent.getItemAtPosition(position);
-//                TextView tv = (TextView) view.findViewById(R.id.room_name);
                 Intent intent = new Intent(getActivity(), ChatActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putString("id", get.room_id);
@@ -89,7 +84,6 @@ public class ChatFragment extends Fragment {
                 bundle.putString("roomType", get.room_type);
                 bundle.putString("userId", userId);
                 bundle.putString("username", username);
-//                bundle.putString("exit", "yes");
                 intent.putExtras(bundle);
                 startActivity(intent);
             }
@@ -135,7 +129,7 @@ public class ChatFragment extends Fragment {
 
     public ArrayList<Chatroom> fetchChatRoom(String url) throws IOException {
         ArrayList<Chatroom> rList = new ArrayList<>();
-        String results = HttpUtil.readStream(new URL(url).openStream());
+        String results = HttpUtil.readStream(HttpUtil.getConnection(url).getInputStream());
         try {
             JSONArray data = new JSONObject(results).getJSONArray("data");
             for (int i = 0; i < data.length(); i++) {
@@ -147,26 +141,37 @@ public class ChatFragment extends Fragment {
                 String message_user = chatroom.getString("username");
                 String message = chatroom.getString("message");
                 String messag_time = chatroom.getString("message_time");
+                String avatar = "";
                 if (type.equals("person")) {
                     String[] chatroom_name = name.split("&");
                     if (!chatroom_name[0].equals(username) && !chatroom_name[1].equals(username)) {
                         continue;
                     } else {
                         name = chatroom_name[0].equals(username) ? chatroom_name[1] : chatroom_name[0];
+                        String URL = getAvatarUrl + "?username=" + name;
+                        avatar = HttpUtil.getAvatar(URL);
                     }
                 }
                 Chatroom room = new Chatroom(roomId, name);
+                room.setMessage(message_user, message, messag_time);
                 room.setType(type);
-                if (messag_time != null) {
-                    room.setMessage(message_user, message, messag_time);
+                if (avatar == null || avatar.equals("null")) {
+                    room.setAvatar(getResources().getDrawable(R.drawable.avatar));
+                } else {
+                    room.setAvatar(avatar);
                 }
                 rList.add(room);
-                //rList.add(new Chatroom(chatroom.getString("id"), chatroom.getString("name")));
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
         Log.d("Chatrooms", results);// 打印获取信息
         return rList;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        requireActivity().unregisterReceiver(mRefreshBroadcastReceiver);
     }
 }

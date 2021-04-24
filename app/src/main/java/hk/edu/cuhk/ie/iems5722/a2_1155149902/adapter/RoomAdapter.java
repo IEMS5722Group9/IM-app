@@ -15,6 +15,7 @@ import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.Chatroom;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.User;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.HttpUtil;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.ImageUtil;
 
 public class RoomAdapter extends ArrayAdapter<Chatroom> {
     public ArrayList<Chatroom> rList;
@@ -55,6 +56,8 @@ public class RoomAdapter extends ArrayAdapter<Chatroom> {
         }
         if (room.room_type.equals("group")) {
             holder.image.setImageResource(R.drawable.group);
+        } else {
+            holder.image.setImageDrawable(room.avatar);
         }
         holder.name.setText(room.room_name);
         try {
@@ -62,10 +65,14 @@ public class RoomAdapter extends ArrayAdapter<Chatroom> {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        String messageStr=room.newest_message.getMessage();
+        if (room.newest_message.getMessage().length() > 20) {
+            messageStr=room.newest_message.getMessage().substring(0, 20) + "...";
+        }
         if (room.newest_message.getName().equals(this.username))
-            holder.message.setText(room.newest_message.getMessage());
+            holder.message.setText(messageStr);
         else {
-            holder.message.setText(room.newest_message.getName() + ": " + room.newest_message.getMessage());
+            holder.message.setText(room.newest_message.getName() + ": " + messageStr);
         }
 
         return convertView;
