@@ -120,7 +120,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         };
         style.setSpan(clickableSpan, 23, 30, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        ForegroundColorSpan foregroundColorSpan = new ForegroundColorSpan(Color.parseColor("#0000FF"));
+        ForegroundColorSpan foregroundColorSpan = new ForegroundColorSpan(Color.parseColor("#1E90FF"));
         style.setSpan(foregroundColorSpan, 23, 30, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return style;
     }

@@ -13,6 +13,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -21,12 +24,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import org.json.JSONException;
 
 import java.io.IOException;
 
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.activity.AddFriendsActivity;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.activity.LoginActivity;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.User;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.HttpUtil;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.ImageUtil;
@@ -69,6 +75,12 @@ public class MeFragment extends Fragment {
     }
 
     public MeFragment() {
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -116,6 +128,37 @@ public class MeFragment extends Fragment {
         Bundle bundle = ((MainActivity) context).toValue();
         userId = bundle.getString("userId");
         username = bundle.getString("username");
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        //设置另外的menu
+        menu.clear();
+        inflater.inflate(R.menu.menu_logout, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.toolbar_logout) {
+            AlertDialog.Builder choiceBuilder = new AlertDialog.Builder(getActivity());
+            choiceBuilder.setCancelable(false);
+            choiceBuilder
+                    .setTitle("Log out？")
+                    .setNeutralButton("Yes", new DialogInterface.OnClickListener() {//添加"Yes"按钮
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            requireActivity().startActivity(new Intent(getActivity(), LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                        }
+                    })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {//添加取消
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) { }
+                    });
+            choiceBuilder.create();
+            choiceBuilder.show();
+        }
+        return true;
     }
 
     /**
