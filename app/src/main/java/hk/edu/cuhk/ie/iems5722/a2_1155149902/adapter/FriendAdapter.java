@@ -1,8 +1,6 @@
 package hk.edu.cuhk.ie.iems5722.a2_1155149902.adapter;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +12,6 @@ import java.util.ArrayList;
 
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.User;
-import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.ViewUtil;
 
 public class FriendAdapter extends ArrayAdapter<User> {
     public ArrayList<User> friendsList;

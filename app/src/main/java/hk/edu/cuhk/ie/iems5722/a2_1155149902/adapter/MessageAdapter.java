@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -53,7 +54,9 @@ public class MessageAdapter extends ArrayAdapter<Message> {
             holder.name = (TextView) convertView.findViewById(R.id.user_name);
             holder.content = (TextView) convertView.findViewById(R.id.message_content);
             holder.time = (TextView) convertView.findViewById(R.id.message_time);
+            holder.avatar = (ImageView) convertView.findViewById(R.id.user_avatar);
 
+            holder.avatar.setImageDrawable(m.getAvatar());
             holder.name.setVisibility(View.GONE);
             holder.content.setText(m.getMessage());
             try {
@@ -67,7 +70,9 @@ public class MessageAdapter extends ArrayAdapter<Message> {
             holder.name = (TextView) convertView.findViewById(R.id.r_user_name);
             holder.content = (TextView) convertView.findViewById(R.id.r_message_content);
             holder.time = (TextView) convertView.findViewById(R.id.r_message_time);
+            holder.avatar = (ImageView) convertView.findViewById(R.id.r_user_avatar);
 
+            holder.avatar.setImageDrawable(m.getAvatar());
             if (!roomType.equals("person")) {
                 holder.name.setText(String.format("%s", m.getName()));
             } else {
@@ -88,5 +93,6 @@ public class MessageAdapter extends ArrayAdapter<Message> {
         TextView content;
         TextView time;
         TextView name;
+        ImageView avatar;
     }
 }

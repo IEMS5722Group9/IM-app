@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     android:gravity="right"
     android:orientation="horizontal"
-    android:paddingTop="10dp">
+    android:paddingTop="20dp"
+    android:paddingRight="10dp">
 
 
     <LinearLayout
@@ -31,7 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_corner"
-            android:gravity="right"
+            android:gravity="left"
             android:maxWidth="200dp"
             android:text="内容"
             android:textColor="@color/white"

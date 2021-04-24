@@ -4,10 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,12 +19,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
@@ -37,7 +32,6 @@ import hk.edu.cuhk.ie.iems5722.a2_1155149902.adapter.FriendAdapter;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.User;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.HttpUtil;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.UrlUtil;
-import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.ViewUtil;
 
 public class FriendsFragment extends Fragment {
     private ListView friendListView;
@@ -181,6 +175,5 @@ public class FriendsFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         requireActivity().unregisterReceiver(mRefreshBroadcastReceiver);
-
     }
 }

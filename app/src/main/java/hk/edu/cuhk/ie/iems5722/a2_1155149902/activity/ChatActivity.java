@@ -6,7 +6,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -44,9 +43,7 @@ import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
-import static androidx.core.app.NotificationCompat.VISIBILITY_PUBLIC;
-
-public class ChatActivity extends AppCompatActivity implements View.OnClickListener, AbsListView.OnScrollListener {
+public class ChatActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "ChatActivity";
     private EditText editText;
     private ImageButton btn_send;
@@ -62,9 +59,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private String userId;
     private String username;
 
-    public Boolean isFirstRow;
-    public Boolean isLoading = false;
-    public Boolean isLastPage = false;
+    //    public Boolean isFirstRow;
+//    public Boolean isLoading = false;
+//    public Boolean isLastPage = false;
     public int page;
     public int total_page;
 
@@ -72,16 +69,17 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     //创建通知管理器
     private NotificationManager notificationManager;
     private Socket mSocket;
+    private Context mContext;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext = this;
         setContentView(R.layout.activity_chat);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         //左侧添加一个默认的返回图标
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         //设置返回键可用
@@ -119,6 +117,42 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         }
         getURL = getURL + roomId + "&page=";
         new MyGetTask().execute(getURL + 1);
+
+        mlistview.setOnScrollListener(new AbsListView.OnScrollListener() {
+            private Boolean isFirstRow;
+            private Boolean isLoading = false;
+            private Boolean isLastPage = false;
+
+            @Override
+            public void onScroll(AbsListView view, int first, int visible, int total) {
+                if (first == 0) {
+                    isFirstRow = true;
+                } else {
+                    isLoading = false;
+                }
+                if (page != total_page) {
+                    isLastPage = false;
+                }
+            }
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                if (isFirstRow && !isLoading && !isLastPage && scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
+                    page = page + 1;
+                    if (page <= total_page) {
+                        new MyGetTask().execute(getURL + page);
+                        isFirstRow = false;
+                        isLoading = true;
+                    } else {
+                        Toast.makeText(ChatActivity.this, "No more messages", Toast.LENGTH_SHORT).show();
+                        isLastPage = true;
+                    }
+                }
+            }
+        });
+
+        btn_send.setOnClickListener(this);
+        btn_refresh.setOnClickListener(this);
     }
 
     public void initView() {
@@ -126,11 +160,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         btn_send = (ImageButton) findViewById(R.id.send_button);
         btn_refresh = (ImageButton) findViewById(R.id.refresh);
         mlistview = (ListView) findViewById(R.id.listView);
-
-        mlistview.setOnScrollListener(this);
-
-        btn_send.setOnClickListener(this);
-        btn_refresh.setOnClickListener(this);
     }
 
     @Override
@@ -157,6 +186,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     Toast.makeText(this, "Input something", Toast.LENGTH_SHORT).show();
                 }
                 break;
+            default:
+                break;
         }
     }
 
@@ -178,7 +209,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         protected MessageList doInBackground(String... params) {
             try {
-                return HttpUtil.fetchMessage(params[0]);
+                return HttpUtil.fetchMessage(mContext, params[0]);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
@@ -189,16 +220,18 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         protected void onPostExecute(MessageList newList) {
             super.onPostExecute(newList);
-            Intent intent = new Intent();
-            intent.setAction("action.refreshRoom");
-            sendBroadcast(intent);
-            page = Integer.parseInt(newList.current_page);
-            total_page = Integer.parseInt(newList.total_pages);
-            mlist.addAll(0, newList.messages);
-            MessageAdapter adapter = new MessageAdapter(ChatActivity.this, mlist, userId, roomType);
-            mlistview.setAdapter(adapter);
-            mlistview.setSelection(newList.messages.size());
-            //Toast.makeText(ChatActivity.this, "Load Success", Toast.LENGTH_SHORT).show();
+            if (newList != null) {
+                try {
+                    page = Integer.parseInt(newList.current_page);
+                    total_page = Integer.parseInt(newList.total_pages);
+                } catch (Exception e) {
+                    return;
+                }
+                mlist.addAll(0, newList.messages);
+                MessageAdapter adapter = new MessageAdapter(mContext, mlist, userId, roomType);
+                mlistview.setAdapter(adapter);
+                mlistview.setSelection(newList.messages.size());
+            }
         }
     }
 
@@ -225,29 +258,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    @Override
-    public void onScroll(AbsListView view, int first, int visible, int total) {
-        if (first == 0) {
-            isFirstRow = true;
-        } else {
-            isLoading = false;
-        }
-    }
-
-    @Override
-    public void onScrollStateChanged(AbsListView view, int scrollState) {
-        if (isFirstRow && !isLoading && !isLastPage && scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
-            page = page + 1;
-            if (page <= total_page) {
-                new MyGetTask().execute(getURL + page);
-                isFirstRow = false;
-                isLoading = true;
-            } else {
-                Toast.makeText(ChatActivity.this, "This is the last page", Toast.LENGTH_SHORT).show();
-                isLastPage = true;
-            }
-        }
-    }
 
     private void sendNotification(String content, String title) {
         Intent intent = new Intent();
@@ -376,6 +386,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     sendNotification(msg, room);
                     mlist = new ArrayList<>();
                     new MyGetTask().execute(getURL + 1);
+                    Intent intent = new Intent();
+                    intent.setAction("action.refreshRoom");
+                    sendBroadcast(intent);
                 }
             });
         }
