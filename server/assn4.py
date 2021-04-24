@@ -14,34 +14,32 @@ def broadcast_room():
         return jsonify(message='<error message>', status='ERROR')
 
     broadcast_data = {'chatroom_id': chatroom_id, 'message': message}
-    socketio.emit('message', broadcast_data, broadcast=True, room=chatroom_id, include_self=False)
+    socketio.emit('message', broadcast_data, broadcast=True, room=chatroom_id)
     return jsonify(status='OK')
 
 
-@socketio.on('connect')
-def connect_handler():
-    print('Client connected')
-
-
-@socketio.on('disconnect')
-def disconnect_handler():
-    print('Client disconnected')
+# @socketio.on('connect')
+# def connect_handler():
+#     print('Client connected')
+#
+#
+# @socketio.on('disconnect')
+# def disconnect_handler():
+#     print('Client disconnected')
 
 
 @socketio.on('join')
 def on_join(username, chatroom_id):
-    # username = data['username']
-    # chatroom_id = data['chatroom_id']
     join_room(chatroom_id)
     print(username, chatroom_id)
-    emit('join', {'data': username + ' has entered the room ' + chatroom_id}, room=chatroom_id, broadcast=True, include_self=False)
+    emit('join', {'data': username + ' has entered the room ' + chatroom_id}, room=chatroom_id, broadcast=True)
 
 
 @socketio.on('leave')
 def on_leave(username, chatroom_id):
     leave_room(chatroom_id)
     print(username, chatroom_id)
-    emit('leave', {'data': username + ' has leaved the room ' + chatroom_id}, room=chatroom_id, broadcast=True, include_self=False)
+    emit('leave', {'data': username + ' has leaved the room ' + chatroom_id}, room=chatroom_id, broadcast=True)
 
 
 if __name__ == '__main__':
