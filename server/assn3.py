@@ -20,7 +20,7 @@ class MyDatabase:
             port=3306,  # default, can be omitted
             user="dbuser",  # dbuser
             password="password",  # password
-            database="group9",
+            database="group9", # group9
         )
         self.cursor = self.conn.cursor(dictionary=True)
         return
@@ -69,6 +69,7 @@ def get_user():
 def register_user():
     username = request.form.get('username')
     password = request.form.get("password")
+    salt = request.form.get('salt')
 
     mydb = MyDatabase()
     query1 = "select * from users where username=\"%s\"" % username
@@ -77,8 +78,8 @@ def register_user():
     if len(user) != 0:
         return jsonify(message='User already exists', status='ERROR')
 
-    query2 = "INSERT INTO users (username, password) VALUES (%s,%s)"
-    params = (username, password)
+    query2 = "INSERT INTO users (username, password, salt) VALUES (%s,%s,%s)"
+    params = (username, password, salt)
     mydb.cursor.execute(query2, params)
     mydb.conn.commit()
     return jsonify(status='OK')
