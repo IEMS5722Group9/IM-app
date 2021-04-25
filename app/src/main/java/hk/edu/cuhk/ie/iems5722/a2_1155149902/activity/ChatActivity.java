@@ -394,7 +394,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     Intent intent = new Intent();
                     intent.setAction("action.refreshRoom");
                     sendBroadcast(intent);
-                    sendNotification(msg, room);
+                    sendNotification(msg, roomName);
                 }
             });
         }
