@@ -36,6 +36,7 @@ import java.net.URL;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.model.User;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.HttpUtil;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.MD5Util;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.UrlUtil;
 
 public class LoginActivity extends AppCompatActivity {
@@ -63,7 +64,8 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!TextUtils.isEmpty(user.getText()) && !TextUtils.isEmpty(password.getText())) {
-                    new MyLogInTask().execute(getUserUrl, user.getText().toString(), password.getText().toString());
+                    String psd = password.getText().toString();
+                    new MyLogInTask().execute(getUserUrl, user.getText().toString(), psd);
 //                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
 //                    Bundle data = new Bundle();
 //                    data.putString("userId", "root");
@@ -95,7 +97,8 @@ public class LoginActivity extends AppCompatActivity {
             if (me == null) {
                 Toast.makeText(LoginActivity.this, "User does not exist", Toast.LENGTH_SHORT).show();
             } else {
-                if (me.password.equals(password)) {
+                String psd = MD5Util.encoder(password, me.saltKey);
+                if (me.password.equals(psd)) {
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     Bundle data = new Bundle();
                     data.putString("userId", String.valueOf(me.id));

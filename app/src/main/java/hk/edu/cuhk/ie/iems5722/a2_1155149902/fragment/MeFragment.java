@@ -297,7 +297,7 @@ public class MeFragment extends Fragment {
         }
 
         protected void onPostExecute(User me) {
-            if (avatar == null || avatar.equals("null")) {
+            if (avatar == null || avatar.equals("null") || avatar.equals("")) {
                 iv_me.setImageResource(R.drawable.avatar);
             } else {
 //                Bitmap bitmap = ViewUtil.stringtoBitmap(avatar);
