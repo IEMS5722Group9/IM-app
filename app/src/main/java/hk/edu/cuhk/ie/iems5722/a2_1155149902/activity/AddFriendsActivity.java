@@ -198,9 +198,7 @@ public class AddFriendsActivity extends AppCompatActivity implements View.OnClic
                 Toast.makeText(AddFriendsActivity.this, "Permission needed.", Toast.LENGTH_SHORT).show();
             } else {
                 ActivityCompat.requestPermissions(AddFriendsActivity.this,
-                        new String[]{Manifest.permission.CAMERA},
-                        0);
-//                Toast.makeText(AddFriendsActivity.this, "Permission ready.", Toast.LENGTH_SHORT).show();
+                        new String[]{Manifest.permission.CAMERA}, 0);
             }
         } else {
             goScanner();

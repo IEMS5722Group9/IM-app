@@ -387,14 +387,15 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 public void run() {
                     JSONObject data = (JSONObject) args[0];
                     String msg = data.optString("message");
-                    String room = data.optString("chatroom_id");
+                    String sender = data.optString("sender");
                     allLoaded = false;
                     mlist = new ArrayList<>();
                     new MyGetTask().execute(getURL + 1);
                     Intent intent = new Intent();
                     intent.setAction("action.refreshRoom");
                     sendBroadcast(intent);
-                    sendNotification(msg, roomName);
+                    if (!sender.equals(username))
+                        sendNotification(msg, roomName);
                 }
             });
         }

@@ -20,7 +20,7 @@ class MyDatabase:
             port=3306,  # default, can be omitted
             user="dbuser",  # dbuser
             password="password",  # password
-            database="group9", # group9
+            database="group9",  # group9
         )
         self.cursor = self.conn.cursor(dictionary=True)
         return
@@ -107,9 +107,9 @@ def add_chatroom():
 
     # 如果chatroom已经存在就不插入
     mydb = MyDatabase()
-    query1 = "INSERT INTO chatrooms(`name`,type) " \
-             "SELECT %s,%s FROM dual WHERE NOT EXISTS" \
-             "(SELECT *  FROM chatrooms WHERE `name` in(%s,%s));"
+    query1 = '''INSERT INTO chatrooms(`name`,type) 
+                SELECT %s,%s FROM dual WHERE NOT EXISTS 
+                (SELECT *  FROM chatrooms WHERE `name` in(%s,%s));'''
     params1 = (chatroom_name, type, chatroom_name, reverse_name)
     mydb.cursor.execute(query1, params1)
     mydb.conn.commit()
@@ -164,6 +164,7 @@ def send_message():
 
     data = {
         "chatroom_id": chatroom_id,
+        "sender": name,
         "message": message
     }
     url = "http://18.219.150.95:8001/api/a4/broadcast_room"
@@ -230,6 +231,7 @@ def get_avatar():
     mydb.cursor.execute(query)
     avatar = mydb.cursor.fetchall()
     return jsonify(status='OK', data=avatar)
+
 
 # /api/a3/post_avatar
 @app.route("/api/a3/post_avatar", methods=['POST'])

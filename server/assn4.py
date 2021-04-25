@@ -9,11 +9,12 @@ socketio = SocketIO(app)
 @app.route("/api/a4/broadcast_room", methods=["POST"])
 def broadcast_room():
     chatroom_id = request.form.get("chatroom_id")
+    sender = request.form.get("sender")
     message = request.form.get("message")
     if not all([chatroom_id, message]):
         return jsonify(message='<error message>', status='ERROR')
 
-    broadcast_data = {'chatroom_id': chatroom_id, 'message': message}
+    broadcast_data = {'sender': sender, 'message': message}
     socketio.emit('message', broadcast_data, broadcast=True, room=chatroom_id)
     return jsonify(status='OK')
 
