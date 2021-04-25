@@ -249,8 +249,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            mlist = new ArrayList<>();
-            new MyGetTask().execute(getURL + 1);
+//            mlist = new ArrayList<>();
+//            new MyGetTask().execute(getURL + 1);
             Intent intent = new Intent();
             intent.setAction("action.refreshRoom");
             sendBroadcast(intent);
@@ -383,12 +383,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     JSONObject data = (JSONObject) args[0];
                     String msg = data.optString("message");
                     String room = data.optString("chatroom_id");
-                    sendNotification(msg, room);
                     mlist = new ArrayList<>();
                     new MyGetTask().execute(getURL + 1);
                     Intent intent = new Intent();
                     intent.setAction("action.refreshRoom");
                     sendBroadcast(intent);
+                    sendNotification(msg, room);
                 }
             });
         }

@@ -18,9 +18,9 @@ class MyDatabase:
         self.conn = mysql.connector.connect(
             host="localhost",
             port=3306,  # default, can be omitted
-            user="root",  # dbuser
-            password="123456",  # password
-            database="iems5722",
+            user="dbuser",  # dbuser
+            password="password",  # password
+            database="group9",
         )
         self.cursor = self.conn.cursor(dictionary=True)
         return
@@ -55,7 +55,7 @@ def getMessagesFromDB(chatroom_id, page):
 def get_user():
     username = request.form.get('username')
     mydb = MyDatabase()
-    query = "select * from users where username=\"%s\"" % username
+    query = "select * from users where BINARY username=\"%s\"" % username
     mydb.cursor.execute(query)
     user = mydb.cursor.fetchall()
     if len(user) == 0:
@@ -229,17 +229,6 @@ def get_avatar():
     mydb.cursor.execute(query)
     avatar = mydb.cursor.fetchall()
     return jsonify(status='OK', data=avatar)
-
-
-# # /api/a3/get_avatar?user_id=1
-# @app.route('/api/a3/get_avatar')
-# def get_avatar():
-#     user_id = request.args.get('user_id')
-#     mydb = MyDatabase()
-#     query = "select avatar from users where id=%s" % user_id
-#     mydb.cursor.execute(query)
-#     avatar = mydb.cursor.fetchall()
-#     return jsonify(status='OK', data=avatar)
 
 # /api/a3/post_avatar
 @app.route("/api/a3/post_avatar", methods=['POST'])

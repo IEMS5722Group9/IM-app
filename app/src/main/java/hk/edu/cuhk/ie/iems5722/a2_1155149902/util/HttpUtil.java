@@ -87,6 +87,7 @@ public class HttpUtil {
                 me.id = Integer.parseInt(data.getJSONObject(0).getString("id"));
                 me.username = data.getJSONObject(0).getString("username");
                 me.password = data.getJSONObject(0).getString("password");
+                me.saltKey = data.getJSONObject(0).getString("salt");
                 conn.disconnect();
                 return me;
             }
@@ -96,7 +97,8 @@ public class HttpUtil {
     }
 
     public static String registerUser(String... params) throws IOException, JSONException {
-        String urlParams = "username=" + params[1] + "&password=" + params[2];
+        params[2] = MD5Util.encoder(params[2],params[3]);
+        String urlParams = "username=" + params[1] + "&password=" + params[2] + "&salt=" + params[3];
         HttpURLConnection conn = postConnection(params[0], urlParams);
         OutputStream os = conn.getOutputStream();
         os.write(urlParams.getBytes());

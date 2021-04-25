@@ -8,7 +8,7 @@ public class User {
     public int id;
     public String username;
     public String password;
-    //    public Drawable avatar;
+    public String saltKey;
     public Drawable avatar;
 
     public User() {
@@ -49,5 +49,13 @@ public class User {
 
     public int getId() {
         return this.id;
+    }
+
+    public String getSaltKey() {
+        return saltKey;
+    }
+
+    public void setSaltKey(String saltKey) {
+        this.saltKey = saltKey;
     }
 }

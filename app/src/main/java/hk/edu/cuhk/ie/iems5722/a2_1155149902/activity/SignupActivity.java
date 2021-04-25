@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.R;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.HttpUtil;
+import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.MD5Util;
 import hk.edu.cuhk.ie.iems5722.a2_1155149902.util.UrlUtil;
 
 public class SignupActivity extends AppCompatActivity {
@@ -45,10 +46,17 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!TextUtils.isEmpty(user.getText()) && !TextUtils.isEmpty(password.getText()) && !TextUtils.isEmpty(password_confirm.getText())) {
-                    if (password.getText().toString().equals(password_confirm.getText().toString()))
-                        new MyRegisterTask().execute(registerUrl, user.getText().toString(), password.getText().toString());
+                    String psd = password.getText().toString();
+                    if(psd.length()<6 || psd.length()>12){
+                        Toast.makeText(SignupActivity.this, "Password length should be 6-15 characters", Toast.LENGTH_SHORT).show();
+                    }
                     else {
-                        Toast.makeText(SignupActivity.this, "Two passwords are different", Toast.LENGTH_SHORT).show();
+                        if (psd.equals(password_confirm.getText().toString()))
+                            new MyRegisterTask().execute(registerUrl, user.getText().toString(), psd, MD5Util.generateSalt(psd));
+                        else {
+                            Toast.makeText(SignupActivity.this, "Two passwords are different", Toast.LENGTH_SHORT).show();
+                        }
+
                     }
                 } else {
                     Toast.makeText(SignupActivity.this, "Please input your information", Toast.LENGTH_SHORT).show();
