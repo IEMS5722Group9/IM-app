@@ -85,7 +85,7 @@ POST /post_avatar
 
   \- base64coder	# handling avatars
 
-  \- yzing-lib 	# handling QR code
+  \- YZxing-lib 	# handling QR code
 
 ## server
 
