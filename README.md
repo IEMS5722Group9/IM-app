@@ -33,7 +33,7 @@ POST /post_avatar
 
 - Target SDK: 30
 - Tested on Android 11, Sumsung
-- Import yzing-lib 
+- Import YZxing-lib
 - Import Base64Coder
 
 ## Project Structure
